@@ -167,26 +167,6 @@ class DatatableQuery
     }
 
     /**
-     * Query results after filtering.
-     *
-     * @param integer $rootEntityIdentifier
-     *
-     * @return int
-     */
-    public function getCountFilteredResults($rootEntityIdentifier)
-    {
-        $qb = $this->em->createQueryBuilder();
-        $qb->select('count(distinct ' . $this->metadata->getTableName() . '.' . $rootEntityIdentifier . ')');
-        $qb->from($this->metadata->getName(), $this->metadata->getTableName());
-
-        $this->setLeftJoins($qb);
-        $this->setWhere($qb);
-        $this->setWhereCallbacks($qb);
-
-        return (int) $qb->getQuery()->getSingleScalarResult();
-    }
-
-    /**
      * Set select from.
      *
      * @return $this
@@ -232,13 +212,12 @@ class DatatableQuery
         $globalSearchString = $this->requestParams['search']['value'];
         $i = 0;
         if ($globalSearchString != '') {
-
             $orExpr = $qb->expr()->orX();
 
-            foreach ($this->requestParams['columns'] as $column) {
+            foreach ($this->requestParams['columns'] as $key => $column) {
                 //TODO This should be read from server side(PHP) config, not client side
                 if (isset($column['searchable']) && $column['searchable'] === 'true') {
-                    $searchField = $column['data'];
+                    $searchField = $this->allColumns[$key];
                     $orExpr->add($qb->expr()->like($searchField, "?$i"));
                 }
             }
@@ -293,15 +272,11 @@ class DatatableQuery
      */
     public function setOrderBy()
     {
-        if (isset($this->requestParams['iSortCol_0'])) {
-            for ($i = 0; $i < intval($this->requestParams['iSortingCols']); $i++) {
-                if ($this->requestParams['bSortable_'.intval($this->requestParams['iSortCol_' . $i])] === 'true') {
-                    $this->qb->addOrderBy(
-                        $this->allColumns[$this->requestParams['iSortCol_' . $i]],
-                        $this->requestParams['sSortDir_' . $i]
-                    );
-                }
-            }
+        foreach ($this->requestParams['order'] as $orderCol) {
+            $this->qb->addOrderBy(
+                $this->allColumns[(int) $orderCol['column']],
+                $orderCol['dir']
+            );
         }
 
         return $this;

@@ -66,11 +66,6 @@ class DatatableData implements DatatableDataInterface
     /**
      * @var array
      */
-    protected $response;
-
-    /**
-     * @var array
-     */
     protected $selectColumns;
 
     /**
@@ -103,7 +98,6 @@ class DatatableData implements DatatableDataInterface
         $this->datatableQuery = new DatatableQuery($requestParams, $this->metadata, $this->em);
         $identifiers = $this->metadata->getIdentifierFieldNames();
         $this->rootEntityIdentifier = array_shift($identifiers);
-        $this->response = array();
         $this->selectColumns = array();
         $this->allColumns = array();
         $this->joins = array();
@@ -261,23 +255,20 @@ class DatatableData implements DatatableDataInterface
     {
         $this->setColumns();
         $this->buildQuery();
+        $paginator = new Paginator($this->datatableQuery->execute(), true);
 
-        $fresults = new Paginator($this->datatableQuery->execute(), true);
-        $output = array("data" => array());
+        $output = array(
+            'draw' => (int) $this->requestParams['draw'],
+            'recordsTotal' => $this->datatableQuery->getCountAllResults($this->rootEntityIdentifier),
+            'recordsFiltered' => $paginator->count(),
+            'data' => [],
+        );
 
-        foreach ($fresults as $item) {
+        foreach ($paginator as $item) {
             $output['data'][] = $item;
         }
 
-        $outputHeader = array(
-            'draw' => (int) $this->requestParams['draw'],
-            'totalRecords' => $this->datatableQuery->getCountAllResults($this->rootEntityIdentifier),
-            'totalDisplayRecords' => $this->datatableQuery->getCountFilteredResults($this->rootEntityIdentifier)
-        );
-
-        $this->response = array_merge($outputHeader, $output);
-
-        $json = $this->serializer->serialize($this->response, 'json');
+        $json = $this->serializer->serialize($output, 'json');
         $response = new Response($json);
         $response->headers->set('Content-Type', 'application/json');
 
