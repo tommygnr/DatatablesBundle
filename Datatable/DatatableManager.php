@@ -77,6 +77,8 @@ class DatatableManager
          */
         $em = $this->doctrine->getManager();
 
+        $datatable->buildDatatableView();
+
         return new DatatableData(
             $params,
             $datatable,
