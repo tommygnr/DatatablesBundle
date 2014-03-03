@@ -18,12 +18,13 @@ All the installation instructions are located in the documentation.
 
 ## License
 
-This bundle is under the MIT license. See the complete license in the bundle:
+This bundle is under the MIT license. See the complete license at:
 
-    Resources/meta/LICENSE
+[Resources/meta/LICENSE](https://github.com/tommygnr/DatatablesBundle/blob/master/Resources/meta/LICENSE)
+
 
 ## Reporting an issue or a feature request
 
 Issues and feature requests are tracked in the [Github issue tracker](https://github.com/tommygnr/DatatablesBundle/issues).
 
-** NB pull requests adding support/compatibility with older versions of ```PHP/Symfony/Datatables``` will be ignored.**
+**NB pull requests adding support/compatibility with older versions of ```PHP```/```Symfony```/```Datatables``` will be declined.**
