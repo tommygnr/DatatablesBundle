@@ -230,10 +230,10 @@ class DatatableQuery
         // individual filtering
         $andExpr = $qb->expr()->andX();
 
-        foreach ($this->requestParams['columns'] as $column) {
+        foreach ($this->requestParams['columns'] as $key => $column) {
             if (isset($column['searchable']) && $column['searchable'] === 'true' && $column['search']['value'] != '') {
                 //TODO This should be read from server side(PHP) config, not client side
-                $searchField = $column['data'];
+                $searchField = $this->allColumns[$key];
                 $andExpr->add($qb->expr()->like($searchField, "?$i"));
                 $qb->setParameter($i, "%" . $column['search']['value'] . "%");
                 $i++;

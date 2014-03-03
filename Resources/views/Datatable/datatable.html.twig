@@ -103,7 +103,7 @@
 
                 {% if dt_individualFiltering %}
                     $("tfoot input").keyup(function() {
-                        table.filter(this.value, $("tfoot input").index(this));
+                        table.column($("tfoot input").index(this)).search(this.value).draw();
                     });
                 {% endif %}
 
