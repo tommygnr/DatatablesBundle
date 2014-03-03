@@ -20,10 +20,7 @@
         "friendsofsymfony/jsrouting-bundle": "@stable"
     },
     "suggest": {
-        "twbs/bootstrap": "v3.0.0",
         "mopa/bootstrap-bundle": "v3.0.0-beta3",
-        "components/jquery": "1.10.2",
-        "datatables/datatables": "dev-master",
         "moment/moment": "2.5.1"
     },
     "autoload": {
