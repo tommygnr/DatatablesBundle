@@ -1,0 +1,40 @@
+{
+    {% block common %}
+        {% if column.searchable %}
+            "searchable": true,
+        {% else %}
+            "searchable": false,
+        {% endif %}
+
+        {% if column.sortable %}
+            "sortable": true,
+        {% else %}
+            "sortable": false,
+        {% endif %}
+
+        {% if column.visible %}
+            "visible": true,
+        {% else %}
+            "visible": false,
+        {% endif %}
+
+        "title": "{{ column.title }}",
+        "class": "{{ column.class }}",
+        "defaultContent": "{{ column.defaultContent }}",
+        "width": "{{ column.width }}",
+    {% endblock %}
+
+    {% block data %}
+        {% if column.data %}
+            "data": "{{ column.data }}",
+        {% else %}
+            "data": null,
+        {% endif %}
+
+        {% if column.render %}
+            "render": function(data, type, full) {
+                return {{ column.render }}(data, type, full);
+            },
+        {% endif %}
+    {% endblock %}
+},

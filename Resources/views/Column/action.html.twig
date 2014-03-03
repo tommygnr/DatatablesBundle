@@ -1,0 +1,35 @@
+{% extends 'TommyGNRDatatablesBundle:Column:column.html.twig' %}
+
+{% block data %}
+    "data": "{{ column.data }}",
+    "render": function(data, type, full) {
+        var routeParameters  = new Array();
+        var attributes = "";
+
+        {% for key, value in column.renderConditions %}
+            if (!full.{{ value }}) return '';
+        {% endfor %}
+
+        {% for key, value in column.routeParameters %}
+            routeParameters["{{ key }}"] = full.{{ value }};
+        {% endfor %}
+
+        var route  = Routing.generate("{{ column.route }}", routeParameters);
+
+        {% for key, value in column.attributes %}
+            attributes += '{{ key }}="{{ value }}" ';
+        {% endfor %}
+
+        var url  = "<a ";
+        url += 'href="' + route + '" ';
+        url += attributes + ">";
+        {% if column.icon %}
+            url += '<span class="{{ column.icon }}"></span> {{ column.label }}';
+        {% else %}
+            url += "{{ column.label }}";
+        {% endif %}
+        url += "</a>";
+
+        return url;
+    },
+{% endblock %}

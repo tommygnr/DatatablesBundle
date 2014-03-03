@@ -1,0 +1,29 @@
+<?php
+
+/**
+ * This file is part of the TommyGNRDatatablesBundle package.
+ *
+ * (c) Tom Corrigan <https://github.com/tommygnr/DatatablesBundle>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace TommyGNR\DatatablesBundle;
+
+use Symfony\Component\HttpKernel\Bundle\Bundle;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use TommyGNR\DatatablesBundle\DependencyInjection\Compiler\DatatableViewPass;
+
+class TommyGNRDatatablesBundle extends Bundle
+{
+    /**
+     * @param ContainerBuilder $container
+     */
+    public function build(ContainerBuilder $container)
+    {
+        parent::build($container);
+
+        $container->addCompilerPass(new DatatableViewPass());
+    }
+}

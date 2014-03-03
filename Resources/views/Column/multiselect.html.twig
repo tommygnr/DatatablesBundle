@@ -1,0 +1,22 @@
+{% extends 'TommyGNRDatatablesBundle:Column:column.html.twig' %}
+
+{% block common %}
+    "searchable": false,
+    "sortable": false,
+    "visible": true,
+    "title": "<input type='checkbox' name='multiselect_checkall' class='multiselect_checkall' />",
+{% endblock %}
+
+{% block data %}
+    "data": null,
+    "render": function(data, type, full) {
+        var first;
+        for (var i in full) {
+            if (full.hasOwnProperty(i) && typeof(i) !== 'function') {
+                first = full[i];
+                break;
+            }
+        }
+        return "<input type='checkbox' name='multiselect_checkbox' value='" + first + "' class='multiselect_checkbox' />";
+    },
+{% endblock %}

@@ -1,0 +1,34 @@
+{
+    "name": "tommygnr/datatables-bundle",
+    "type": "symfony-bundle",
+    "description": "datatables.net integration into Symfony2 with Doctrine",
+    "keywords": ["symfony2", "datatable", "datatables", "datatables.net", "grid", "table", "datagrid", "doctrine"],
+    "homepage": "https://github.com/tommygnr/DatatablesBundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Tom Corrigan",
+            "email": "tom@tomcorrigan.com.au"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/tommygnr/DatatablesBundle/issues"
+    },
+    "require": {
+        "php": ">=5.4.0",
+        "symfony/framework-bundle": "~2.3",
+        "friendsofsymfony/jsrouting-bundle": "@stable"
+    },
+    "suggest": {
+        "twbs/bootstrap": "v3.0.0",
+        "mopa/bootstrap-bundle": "v3.0.0-beta3",
+        "components/jquery": "1.10.2",
+        "datatables/datatables": "dev-master",
+        "moment/moment": "2.5.1"
+    },
+    "autoload": {
+        "psr-0": { "TommyGNR\\DatatablesBundle": "" }
+    },
+    "target-dir": "TommyGNR/DatatablesBundle"
+}
+
