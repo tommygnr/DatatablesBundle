@@ -42,11 +42,6 @@
                     {% if dt_serverSide %}
                         "serverSide": true,
                         "ajax": "{{ dt_ajaxSource }}",
-                        "serverParams": function(aoData) {
-                            {% for column in dt_columns %}
-                                aoData.push( { "name": "{{ column.property }}", "value": "{{ column.property }}" } );
-                            {% endfor %}
-                        },
                     {% else %}
                         "data": {{ dt_data|raw }},
                     {% endif %}
