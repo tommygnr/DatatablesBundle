@@ -229,29 +229,35 @@ class DatatableQuery
     public function setWhere(QueryBuilder $qb)
     {
         // global filtering
-        if ($this->requestParams['sSearch'] != '') {
+        $globalSearchString = $this->requestParams['search']['value'];
+        $i = 0;
+        if ($globalSearchString != '') {
 
             $orExpr = $qb->expr()->orX();
 
-            for ($i = 0; $i < $this->requestParams['iColumns']; $i++) {
-                if (isset($this->requestParams['bSearchable_' . $i]) && $this->requestParams['bSearchable_' . $i] === 'true') {
-                    $searchField = $this->allColumns[$i];
+            foreach ($this->requestParams['columns'] as $column) {
+                //TODO This should be read from server side(PHP) config, not client side
+                if (isset($column['searchable']) && $column['searchable'] === 'true') {
+                    $searchField = $column['data'];
                     $orExpr->add($qb->expr()->like($searchField, "?$i"));
-                    $qb->setParameter($i, "%" . $this->requestParams['sSearch'] . "%");
                 }
             }
+            $qb->setParameter($i, "%" . $globalSearchString . "%");
+            $i++;
 
-            $qb->where($orExpr);
+            $qb->andWhere($orExpr);
         }
 
         // individual filtering
         $andExpr = $qb->expr()->andX();
 
-        for ($i = 0; $i < $this->requestParams['iColumns']; $i++) {
-            if (isset($this->requestParams['bSearchable_' . $i]) && $this->requestParams['bSearchable_' . $i] === 'true' && $this->requestParams['sSearch_' . $i] != '') {
-                $searchField = $this->allColumns[$i];
+        foreach ($this->requestParams['columns'] as $column) {
+            if (isset($column['searchable']) && $column['searchable'] === 'true' && $column['search']['value'] != '') {
+                //TODO This should be read from server side(PHP) config, not client side
+                $searchField = $column['data'];
                 $andExpr->add($qb->expr()->like($searchField, "?$i"));
-                $qb->setParameter($i, "%" . $this->requestParams['sSearch_' . $i] . "%");
+                $qb->setParameter($i, "%" . $column['search']['value'] . "%");
+                $i++;
             }
         }
 
@@ -308,8 +314,8 @@ class DatatableQuery
      */
     public function setLimit()
     {
-        if (isset($this->requestParams['iDisplayStart']) && $this->requestParams['iDisplayLength'] != '-1') {
-            $this->qb->setFirstResult($this->requestParams['iDisplayStart'])->setMaxResults($this->requestParams['iDisplayLength']);
+        if (isset($this->requestParams['start']) && $this->requestParams['length'] != '-1') {
+            $this->qb->setFirstResult($this->requestParams['start'])->setMaxResults($this->requestParams['length']);
         }
 
         return $this;

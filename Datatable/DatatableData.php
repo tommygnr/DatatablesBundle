@@ -270,9 +270,9 @@ class DatatableData implements DatatableDataInterface
         }
 
         $outputHeader = array(
-            "echo" => (int) $this->requestParams['echo'],
-            "totalRecords" => $this->datatableQuery->getCountAllResults($this->rootEntityIdentifier),
-            "totalDisplayRecords" => $this->datatableQuery->getCountFilteredResults($this->rootEntityIdentifier)
+            'draw' => (int) $this->requestParams['draw'],
+            'totalRecords' => $this->datatableQuery->getCountAllResults($this->rootEntityIdentifier),
+            'totalDisplayRecords' => $this->datatableQuery->getCountFilteredResults($this->rootEntityIdentifier)
         );
 
         $this->response = array_merge($outputHeader, $output);
