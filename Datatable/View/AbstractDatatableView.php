@@ -188,6 +188,7 @@ abstract class AbstractDatatableView implements DatatableViewInterface
 
         $options['theme_name'] = $this->theme->getName();
         $options['theme_dom'] = $this->theme->getDom();
+        $options['theme_jqueryUi'] = $this->theme->isJqueryUi();
         $options['theme_tableClasses'] = $this->theme->getTableClasses();
         $options['theme_formClasses'] = $this->theme->getFormClasses();
         $options['theme_formSubmitButtonClasses'] = $this->theme->getFormSubmitButtonClasses();

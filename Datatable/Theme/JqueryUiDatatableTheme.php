@@ -58,6 +58,7 @@ class JqueryUiDatatableTheme extends AbstractDatatableTheme
      */
     const DEFAULT_FALSE_ICON = 'ui-icon ui-icon-circle-close';
 
+    protected $jQueryUi = true;
 
     /**
      * {@inheritdoc}

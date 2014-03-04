@@ -51,9 +51,8 @@
                     {% if theme_dom %}
                         "dom": "{{ theme_dom|raw }}",
                     {% endif %}
-                    "lengthMenu": [[5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "{{ 'datatables.datatable.all'|trans({}, 'messages') }}"]],
                     "displayLength": {{ dt_displayLength }},
-                    {% if 'jqueryui_datatable_theme' == theme_name %}
+                    {% if 'theme_jqueryUi' %}
                         "jQueryUI": true,
                     {% endif %}
                     "language": {

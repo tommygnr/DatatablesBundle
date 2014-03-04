@@ -51,6 +51,13 @@ abstract class AbstractDatatableTheme implements DatatableThemeInterface
      */
     protected $dom = null;
 
+    /**
+     * Whether or not to set jQueryUi in datatable config
+     *
+     * @var boolean
+     */
+    protected $jQueryUi = false;
+
 
     //-------------------------------------------------
     // Singleton
@@ -188,6 +195,25 @@ abstract class AbstractDatatableTheme implements DatatableThemeInterface
     public function setDom($dom)
     {
         $this->dom = $dom;
+
+        return $this;
+    }
+
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isJqueryUi()
+    {
+        return $this->jQueryUi;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setJqueryUi($jqueryUi)
+    {
+        $this->jQueryUi = $jqueryUi;
 
         return $this;
     }

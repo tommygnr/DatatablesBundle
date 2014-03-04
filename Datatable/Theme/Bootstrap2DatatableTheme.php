@@ -70,6 +70,7 @@ class Bootstrap2DatatableTheme extends AbstractDatatableTheme
      * @var string
      */
     protected $tableClasses = 'table table-striped table-bordered table-hover table-condensed';
+    // protected $tableClasses = 'table table-striped table-bordered table-hover  ';
     /**
      * Bootstrap3 form styling.
      *
@@ -90,7 +91,7 @@ class Bootstrap2DatatableTheme extends AbstractDatatableTheme
      *
      * @var string
      */
-    protected $formSubmitButtonClasses = 'btn btn-primary btn-sm';
+    protected $formSubmitButtonClasses = 'btn btn-primary btn-small';
 
     /**
      * The pagination type.
@@ -105,7 +106,7 @@ class Bootstrap2DatatableTheme extends AbstractDatatableTheme
      *
      * @var string
      */
-    protected $dom = "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>";
+    protected $dom = "<fl>t<'F'p>";
 
     /**
      * {@inheritdoc}

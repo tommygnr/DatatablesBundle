@@ -109,4 +109,20 @@ interface DatatableThemeInterface
      * @return self
      */
     public function setDom($dom);
+
+    /**
+     * Is JqueryUi.
+     *
+     * @return boolean
+     */
+    public function isJqueryUi();
+
+    /**
+     * Set JqueryUi.
+     *
+     * @param boolean $jqueryUi
+     *
+     * @return self
+     */
+    public function setJqueryUi($jqueryUi);
 }
