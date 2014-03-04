@@ -95,7 +95,7 @@ class DatatableData implements DatatableDataInterface
         $this->em = $doctrine->getManager();
         $this->serializer = $serializer;
 
-        $this->datatableQuery = new DatatableQuery($requestParams, $this->metadata, $this->em);
+        $this->datatableQuery = new DatatableQuery($requestParams, $this->metadata, $this->em, $datatable);
         $identifiers = $this->metadata->getIdentifierFieldNames();
         $this->rootEntityIdentifier = array_shift($identifiers);
         $this->selectColumns = array();

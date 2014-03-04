@@ -32,11 +32,18 @@ abstract class AbstractColumn implements ColumnInterface
     private $data;
 
     /**
-     * Enable or disable filtering on the data in this column.
+     * Enable or disable global searching on the data in this column.
      *
      * @var boolean
      */
     private $searchable;
+
+    /**
+     * Enable or disable filtering on the data in this column.
+     *
+     * @var boolean
+     */
+    private $filterable;
 
     /**
      * Enable or disable sorting on this column.
@@ -144,6 +151,24 @@ abstract class AbstractColumn implements ColumnInterface
     public function isSearchable()
     {
         return $this->searchable;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setFilterable($filterable)
+    {
+        $this->filterable = $filterable;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isFilterable()
+    {
+        return $this->filterable;
     }
 
     /**
@@ -312,6 +337,7 @@ abstract class AbstractColumn implements ColumnInterface
     {
         $this->setData($this->property);
         $this->setSearchable(true);
+        $this->setFilterable(false);
         $this->setSortable(true);
         $this->setVisible(true);
         $this->setTitle(null);

@@ -15,6 +15,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query;
+use TommyGNR\DatatablesBundle\Datatable\View\AbstractDatatableView;
 
 /**
  * Class DatatableQuery
@@ -67,11 +68,12 @@ class DatatableQuery
      * @param ClassMetadata $metadata      A ClassMetadata instance
      * @param EntityManager $em            A EntityManager instance
      */
-    public function __construct(array $requestParams, ClassMetadata $metadata, EntityManager $em)
+    public function __construct(array $requestParams, ClassMetadata $metadata, EntityManager $em, AbstractDatatableView $datatable)
     {
         $this->requestParams = $requestParams;
         $this->metadata = $metadata;
         $this->em = $em;
+        $this->datatable = $datatable;
 
         $this->qb = $this->em->createQueryBuilder();
         $this->selectColumns = array();
@@ -211,12 +213,15 @@ class DatatableQuery
         // global filtering
         $globalSearchString = $this->requestParams['search']['value'];
         $i = 0;
+        $dtColumns = $this->datatable->getColumns();
+
         if ($globalSearchString != '') {
             $orExpr = $qb->expr()->orX();
 
             foreach ($this->requestParams['columns'] as $key => $column) {
                 //TODO This should be read from server side(PHP) config, not client side
-                if (isset($column['searchable']) && $column['searchable'] === 'true') {
+                $dtColumn = $dtColumns[$key];
+                if ($dtColumn->isSearchable()) {
                     $searchField = $this->allColumns[$key];
                     $orExpr->add($qb->expr()->like($searchField, "?$i"));
                 }
@@ -231,7 +236,8 @@ class DatatableQuery
         $andExpr = $qb->expr()->andX();
 
         foreach ($this->requestParams['columns'] as $key => $column) {
-            if (isset($column['searchable']) && $column['searchable'] === 'true' && $column['search']['value'] != '') {
+            $dtColumn = $dtColumns[$key];
+            if ($dtColumn->isFilterable() && $column['search']['value'] != '') {
                 //TODO This should be read from server side(PHP) config, not client side
                 $searchField = $this->allColumns[$key];
                 $andExpr->add($qb->expr()->like($searchField, "?$i"));

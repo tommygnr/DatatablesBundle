@@ -9,7 +9,7 @@
                     <tfoot>
                         {% for column in dt_columns %}
                             <th>
-                                {% if column.searchable %}
+                                {% if column.filterable %}
                                     <input type="text" class="{{ theme_formClasses }}" placeholder="{{ column.title }}" />
                                 {% else %}
                                     <input type="hidden" />

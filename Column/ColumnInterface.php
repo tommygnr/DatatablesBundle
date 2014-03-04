@@ -43,7 +43,7 @@ interface ColumnInterface
     /**
      * Set Searchable.
      *
-     * @param boolean $bSearchable
+     * @param boolean $searchable
      *
      * @return self
      */
@@ -57,9 +57,25 @@ interface ColumnInterface
     public function isSearchable();
 
     /**
+     * Set Filterable.
+     *
+     * @param boolean $filterable
+     *
+     * @return self
+     */
+    public function setFilterable($filterable);
+
+    /**
+     * Is Filterable.
+     *
+     * @return boolean
+     */
+    public function isFilterable();
+
+    /**
      * Set Sortable.
      *
-     * @param boolean $bSortable
+     * @param boolean $sortable
      *
      * @return self
      */
@@ -123,7 +139,7 @@ interface ColumnInterface
     /**
      * Set Class.
      *
-     * @param string $Class
+     * @param string $class
      *
      * @return self
      */
