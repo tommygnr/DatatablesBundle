@@ -162,6 +162,7 @@ class DatatableQuery
         $qb = $this->em->createQueryBuilder();
         $qb->select('count(' . $this->metadata->getTableName() . '.' . $rootEntityIdentifier . ')');
         $qb->from($this->metadata->getName(), $this->metadata->getTableName());
+        $this->setLeftJoins($qb);
 
         $this->setWhereCallbacks($qb);
 
