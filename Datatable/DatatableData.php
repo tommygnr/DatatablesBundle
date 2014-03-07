@@ -134,7 +134,7 @@ class DatatableData implements DatatableDataInterface
         if (in_array($column, $metadata->getFieldNames())) {
             $this->selectColumns[($columnTableName ?: $metadata->getTableName())][] = $column;
         } else {
-            throw new Exception('Column '.$column->getProperty().' not found in entity.');
+            throw new Exception('Column '.$column.' not found in entity.');
         }
 
         return $this;
