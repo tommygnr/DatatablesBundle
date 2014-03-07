@@ -204,7 +204,7 @@ class DatatableData implements DatatableDataInterface
             if (strstr($column->getProperty(), '.') !== false) {
                 $array = explode('.', $column->getProperty());
                 $this->setAssociations($array, $this->metadata);
-            } else {
+            } elseif ($column->getProperty() !== null) {
                 // no association found
                 if ($column !== $this->rootEntityIdentifier) {
                     $this->addSelectColumn($this->metadata, $column->getProperty());
