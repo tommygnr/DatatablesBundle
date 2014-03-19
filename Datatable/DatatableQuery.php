@@ -16,6 +16,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query;
 use TommyGNR\DatatablesBundle\Datatable\View\AbstractDatatableView;
+use TommyGNR\DatatablesBundle\Column\ColumnInterface;
 
 /**
  * Class DatatableQuery
@@ -44,11 +45,6 @@ class DatatableQuery
     /**
      * @var array
      */
-    protected $selectColumns;
-
-    /**
-     * @var array
-     */
     protected $allColumns;
 
     /**
@@ -60,6 +56,11 @@ class DatatableQuery
      * @var array
      */
     protected $callbacks;
+
+    /**
+     * @var array
+     */
+    protected $resolvedTableAliases;
 
     /**
      * Constructor.
@@ -76,9 +77,9 @@ class DatatableQuery
         $this->datatable = $datatable;
 
         $this->qb = $this->em->createQueryBuilder();
-        $this->selectColumns = array();
         $this->allColumns = array();
         $this->joins = array();
+        $this->resolvedTableAliases = array();
         $this->callbacks = array(
             'WhereBuilder' => array(),
         );
@@ -92,20 +93,6 @@ class DatatableQuery
     public function getQb()
     {
         return $this->qb;
-    }
-
-    /**
-     * Set selectColumns.
-     *
-     * @param array $selectColumns
-     *
-     * @return $this
-     */
-    public function setSelectColumns(array $selectColumns)
-    {
-        $this->selectColumns = $selectColumns;
-
-        return $this;
     }
 
     /**
@@ -132,6 +119,20 @@ class DatatableQuery
     public function setJoins(array $joins)
     {
         $this->joins = $joins;
+
+        return $this;
+    }
+
+    /**
+     * Add resolved table alias
+     *
+     * @param array $joins
+     *
+     * @return $this
+     */
+    public function addResolvedTableAlias($propertyPath, $tableAlias, $column)
+    {
+        $this->resolvedTableAliases[$propertyPath] = ['alias' => $tableAlias, 'column' => $column];
 
         return $this;
     }
@@ -174,11 +175,10 @@ class DatatableQuery
      *
      * @return $this
      */
-    public function setSelectFrom()
+    public function setSelectFrom(array $selectColumns)
     {
-        foreach ($this->selectColumns as $key => $value) {
-            // $qb->select('partial comment.{id, title}, partial post.{id, title}');
-            $this->qb->addSelect('partial ' . $key . '.{' . implode(',', $this->selectColumns[$key]) . '}');
+        foreach ($selectColumns as $tableAlias => $selectColumns) {
+            $this->qb->addSelect('partial ' . $tableAlias . '.{' . implode(',', $selectColumns) . '}');
         }
 
         $this->qb->from($this->metadata->getName(), $this->metadata->getTableName());
@@ -314,5 +314,26 @@ class DatatableQuery
         $query->setHydrationMode(Query::HYDRATE_ARRAY);
 
         return $query;
+    }
+
+
+    /**
+     * Returns an array of column values, optionally filtered.
+     *
+     * @return array
+     */
+    public function getColumnValues(ColumnInterface $column, $filter = false)
+    {
+        $fields = $this->resolvedTableAliases[$column->getProperty()];
+
+        $qb = $this->em->createQueryBuilder();
+        $qb->select('DISTINCT(' . $fields['alias'] . '.' . $fields['column'] . ')');
+        $qb->from($this->metadata->getName(), $this->metadata->getTableName());
+        $qb->addOrderBy($fields['alias'] . '.' . $fields['column'], 'ASC');
+        $this->setLeftJoins($qb);
+
+        $this->setWhereCallbacks($qb);
+
+        return $qb->getQuery()->getResult();
     }
 }

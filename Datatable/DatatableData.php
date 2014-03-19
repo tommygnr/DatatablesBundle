@@ -149,8 +149,12 @@ class DatatableData implements DatatableDataInterface
      *
      * @return $this
      */
-    private function setAssociations(array $associationParts, ClassMetadata $metadata, $parentTableAlias = null)
+    private function setAssociations(array $associationParts, ClassMetadata $metadata, $rootPath = null, $parentTableAlias = null)
     {
+        if ($rootPath == null){
+            $rootPath = implode('.', $associationParts);
+        }
+
         $column = array_shift($associationParts);
 
         if ($metadata->hasAssociation($column) === true) {
@@ -173,13 +177,14 @@ class DatatableData implements DatatableDataInterface
                 );
             }
 
-            $this->setAssociations($associationParts, $targetMeta, $targetTableAlias);
+            $this->setAssociations($associationParts, $targetMeta, $rootPath, $targetTableAlias);
         } else {
             $targetIdentifiers = $metadata->getIdentifierFieldNames();
             $targetRootIdentifier = array_shift($targetIdentifiers);
 
             if ($column !== $targetRootIdentifier) {
                 $this->addSelectColumn($metadata, $column, $parentTableAlias);
+                $this->datatableQuery->addResolvedTableAlias($rootPath, $parentTableAlias, $column);
             }
 
             $this->allColumns[] = $parentTableAlias . '.' . $column;
@@ -218,32 +223,25 @@ class DatatableData implements DatatableDataInterface
     }
 
     /**
-     * Set columns.
-     *
-     * @return $this
-     */
-    private function setColumns()
-    {
-        $this->datatableQuery->setSelectColumns($this->selectColumns);
-        $this->datatableQuery->setAllColumns($this->allColumns);
-        $this->datatableQuery->setJoins($this->joins);
-
-        return $this;
-    }
-
-    /**
      * Build query.
      *
      * @return $this
      */
     private function buildQuery()
     {
-        $this->datatableQuery->setSelectFrom();
+        //Set columns
+        $this->datatableQuery->setSelectFrom($this->selectColumns);
+        $this->datatableQuery->setAllColumns($this->allColumns);
+
+        $this->datatableQuery->setLimit();
+        $this->datatableQuery->setOrderBy();
+
+        $this->datatableQuery->setJoins($this->joins);
         $this->datatableQuery->setLeftJoins($this->datatableQuery->getQb());
         $this->datatableQuery->setWhere($this->datatableQuery->getQb());
         $this->datatableQuery->setWhereCallbacks($this->datatableQuery->getQb());
-        $this->datatableQuery->setOrderBy();
-        $this->datatableQuery->setLimit();
+
+
 
         return $this;
     }
@@ -253,7 +251,6 @@ class DatatableData implements DatatableDataInterface
      */
     public function getResponse()
     {
-        $this->setColumns();
         $this->buildQuery();
         $paginator = new Paginator($this->datatableQuery->execute(), true);
 
@@ -262,6 +259,7 @@ class DatatableData implements DatatableDataInterface
             'recordsTotal' => $this->datatableQuery->getCountAllResults($this->rootEntityIdentifier),
             'recordsFiltered' => $paginator->count(),
             'data' => [],
+            'columnFilterChoices' => $this->getColumnFilterChoices(),
         );
 
         foreach ($paginator as $item) {
@@ -273,6 +271,23 @@ class DatatableData implements DatatableDataInterface
         $response->headers->set('Content-Type', 'application/json');
 
         return $response;
+    }
+
+    public function getColumnFilterChoices()
+    {
+        $result = [];
+
+        foreach ($this->datatable->getColumns() as $column) {
+            if ($column->isFilterSeeded()) {
+                $values = [];
+                foreach ($this->datatableQuery->getColumnValues($column) as $row ){
+                    $values[] = $row[1];
+                }
+                $result[$column->getProperty()] = $values;
+            }
+        }
+
+        return $result;
     }
 
     /**

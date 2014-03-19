@@ -46,6 +46,13 @@ abstract class AbstractColumn implements ColumnInterface
     private $filterable;
 
     /**
+     * Should filter options be pre seeded
+     *
+     * @var boolean
+     */
+    private $filterSeeded;
+
+    /**
      * Enable or disable sorting on this column.
      *
      * @var boolean
@@ -169,6 +176,24 @@ abstract class AbstractColumn implements ColumnInterface
     public function isFilterable()
     {
         return $this->filterable;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setFilterSeeded($filterSeeded)
+    {
+        $this->filterSeeded = $filterSeeded;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isFilterSeeded()
+    {
+        return $this->filterable && $this->filterSeeded;
     }
 
     /**
@@ -310,6 +335,9 @@ abstract class AbstractColumn implements ColumnInterface
         }
         if (array_key_exists('filterable', $options)) {
             $this->setFilterable($options['filterable']);
+        }
+        if (array_key_exists('filterSeeded', $options)) {
+            $this->setFilterSeeded($options['filterSeeded']);
         }
         if (array_key_exists('visible', $options)) {
             $this->setVisible($options['visible']);
