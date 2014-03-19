@@ -30,7 +30,6 @@ class PostDatatable extends AbstractDatatableView
         $this->setSAjaxSource($this->getRouter()->generate('post_results'));
         $this->setBProcessing(true);                        // default
         $this->setIDisplayLength(10);                       // default
-        $this->setIndividualFiltering(true);                // default = false
 
         $this->setTheme(BootstrapDatatableTheme::getTheme());
 //        $this->setTheme(JqueryUiDatatableTheme::getTheme());

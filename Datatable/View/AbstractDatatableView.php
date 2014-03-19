@@ -112,13 +112,6 @@ abstract class AbstractDatatableView implements DatatableViewInterface
     protected $multiselect;
 
     /**
-     * Enable or disable individual filtering.
-     *
-     * @var boolean
-     */
-    private $individualFiltering;
-
-    /**
      * Constructor.
      *
      * @param TwigEngine $templating           The templating service
@@ -138,7 +131,6 @@ abstract class AbstractDatatableView implements DatatableViewInterface
         $this->ajaxSource = '';
         $this->customizeOptions = array();
         $this->multiselect = new Multiselect($defaultLayoutOptions['multiselect']);
-        $this->individualFiltering = $defaultLayoutOptions['individual_filtering'];
     }
 
     /**
@@ -178,7 +170,6 @@ abstract class AbstractDatatableView implements DatatableViewInterface
         $options['dt_columns'] = $this->columnBuilder->getColumns();
         $options['dt_customizeOptions'] = $this->getCustomizeOptions();
         $options['dt_multiselect'] = $this->multiselect;
-        $options['dt_individualFiltering'] = $this->isIndividualFiltering();
 
         // DatatableThemeInterface Twig variables
 
@@ -412,30 +403,6 @@ abstract class AbstractDatatableView implements DatatableViewInterface
     public function getCustomizeOptions()
     {
         return $this->customizeOptions;
-    }
-
-    /**
-     * Set individualFiltering.
-     *
-     * @param boolean $individualFiltering
-     *
-     * @return $this
-     */
-    public function setIndividualFiltering($individualFiltering)
-    {
-        $this->individualFiltering = (boolean) $individualFiltering;
-
-        return $this;
-    }
-
-    /**
-     * Is individualFiltering.
-     *
-     * @return boolean
-     */
-    public function isIndividualFiltering()
-    {
-        return $this->individualFiltering;
     }
 
     public function getColumns()

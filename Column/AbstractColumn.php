@@ -308,6 +308,9 @@ abstract class AbstractColumn implements ColumnInterface
         if (array_key_exists('sortable', $options)) {
             $this->setSortable($options['sortable']);
         }
+        if (array_key_exists('filterable', $options)) {
+            $this->setFilterable($options['filterable']);
+        }
         if (array_key_exists('visible', $options)) {
             $this->setVisible($options['visible']);
         }
