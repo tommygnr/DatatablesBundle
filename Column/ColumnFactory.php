@@ -63,6 +63,9 @@ class ColumnFactory implements ColumnFactoryInterface
             case 'timeago':
                 $this->column = new TimeagoColumn($property);
                 break;
+            case 'link':
+                $this->column = new LinkColumn($property);
+                break;
             default:
                 throw new Exception("The {$name} column is not supported.");
         }
