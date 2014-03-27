@@ -105,13 +105,6 @@ abstract class AbstractDatatableView implements DatatableViewInterface
     private $customizeOptions;
 
     /**
-     * A Multiselect instance.
-     *
-     * @var Multiselect
-     */
-    protected $multiselect;
-
-    /**
      * Constructor.
      *
      * @param TwigEngine $templating           The templating service
@@ -130,7 +123,6 @@ abstract class AbstractDatatableView implements DatatableViewInterface
         $this->columnBuilder = new ColumnBuilder();
         $this->ajaxSource = '';
         $this->customizeOptions = array();
-        $this->multiselect = new Multiselect($defaultLayoutOptions['multiselect']);
     }
 
     /**
@@ -169,7 +161,6 @@ abstract class AbstractDatatableView implements DatatableViewInterface
         $options['dt_tableId'] = $this->getName();
         $options['dt_columns'] = $this->columnBuilder->getColumns();
         $options['dt_customizeOptions'] = $this->getCustomizeOptions();
-        $options['dt_multiselect'] = $this->multiselect;
 
         // DatatableThemeInterface Twig variables
 

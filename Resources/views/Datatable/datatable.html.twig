@@ -28,6 +28,7 @@
     {% block tommygnr_datatable_js %}
 
         <script>
+            var table;
 
             $(document).ready(function () {
 
@@ -79,8 +80,7 @@
                                 output += '<option value="'+entry+'">' + entry +'</option>';
                             })
                             output += '</select>';
-                            //console.log(output);
-                            //console.log(target);
+
                             var th = $("th[data-filter-property='"+target+"']", this);
                             th.append(output);
                         }
@@ -99,91 +99,40 @@
 
                 $.extend(config, {
                     "columns": [
-                        {# multiselect column #}
-                        {% if dt_multiselect.enabled %}
-                            {% if 'first' == dt_multiselect.position %}
-                                {% include "TommyGNRDatatablesBundle:Column:multiselect.html.twig" %}
-                            {% endif %}
-                        {% endif %}
-
                         {# columns #}
                         {% for column in dt_columns %}
                             {% include "TommyGNRDatatablesBundle:Column:" ~ column.getClassName ~ ".html.twig" %}
                         {% endfor %}
-
-                        {# multiselect column #}
-                        {% if dt_multiselect.enabled %}
-                            {% if 'last' == dt_multiselect.position %}
-                                {% include "TommyGNRDatatablesBundle:Column:multiselect.html.twig" %}
-                            {% endif %}
-                        {% endif %}
                     ]
                 });
 
                 var selector = "#{{ dt_tableId }}";
-                var table = $(selector).DataTable(config);
+                table = $(selector).DataTable(config);
 
-                $("tfoot input").keyup(function() {
-                    table.column($("tfoot input").index(this)).search(this.value).draw();
-                });
-
-                {% if dt_multiselect.enabled %}
-                    var multiple_html = "\
-                        <p>\
-                            <select class='{{ theme_formClasses }}' name='bulk_action_routes[select]'>\
-                                {% for key, value in dt_multiselect.actions %}\
-                                    <option value='{{ path(value) }}'>{{ key }}</option>\
-                                {% endfor %}\
-                            </select>\
-                            <button id='multiselect_submit' type='button' class='{{ theme_formSubmitButtonClasses }}'>Ok</button>\
-                        </p>";
-
-                    $(".pagination").append(multiple_html);
-
-                    $(".multiselect_checkall").click(function(event) {
-                        if(this.checked) {
-                            $("input:checkbox.multiselect_checkbox").each(function() {
-                                this.checked = true;
-                            });
-                        } else {
-                            $("input:checkbox.multiselect_checkbox").each(function() {
-                                this.checked = false;
-                            });
-                        }
-                    });
                 function filterDtColumn(filter, colIndex) {
                     table.column(colIndex).search(filter).draw();
                 }
 
-                    $("#multiselect_submit").click(function() {
-                        var length = $("input:checkbox:checked.multiselect_checkbox").length;
-
-                        if (length > 0) {
-                            if (!confirm( "{{ 'datatables.bulk.confirmMsg'|trans({}, 'messages') }}" )) {
-                                return;
-                            }
-
-                            $.ajax({
-                                url: $("select[name='bulk_action_routes[select]']").val(),
-                                type: "POST",
-                                cache: false,
-                                data: {
-                                    'data': $("input:checkbox:checked.multiselect_checkbox", table.fnGetNodes()).serializeArray()
-                                },
-                                success: function(msg) {
-                                    table.fnDraw();
-                                },
-                                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                                    console.log(XMLHttpRequest + ' ' + textStatus + ' ' +errorThrown);
-                                }
-                            })
-                        } else {
-                            alert("{{ 'datatables.bulk.selectError'|trans({}, 'messages') }}");
-                        }
-                    });
-                {% endif %}
-
+                $(".multiselect_checkall").click(function(event) {
+                    if(this.checked) {
+                        $("input:checkbox.multiselect_checkbox").each(function() {
+                            this.checked = true;
+                        });
+                    } else {
+                        $("input:checkbox.multiselect_checkbox").each(function() {
+                            this.checked = false;
+                        });
+                    }
+                });
             });
+
+            function getSelectedIds() {
+                var ids = new Array();
+                $("input:checkbox:checked.multiselect_checkbox").each(function(index, el){
+                    ids.push($(el).val());
+                })
+                return ids;
+            }
 
         </script>
 

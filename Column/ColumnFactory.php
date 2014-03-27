@@ -66,6 +66,9 @@ class ColumnFactory implements ColumnFactoryInterface
             case 'link':
                 $this->column = new LinkColumn($property);
                 break;
+            case 'multiselect':
+                $this->column = new MultiSelectColumn($property);
+                break;
             default:
                 throw new Exception("The {$name} column is not supported.");
         }
