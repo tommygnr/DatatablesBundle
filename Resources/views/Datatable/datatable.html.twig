@@ -4,21 +4,21 @@
 
         <table cellpadding="0" cellspacing="0" border="0" class="{{ theme_tableClasses }}" id="{{ dt_tableId }}" width="100%">
             <thead>
+                {% for column in dt_columns %}
+                    {% if column.filterable %}
+                        <th
+                            data-filter-target="{{ loop.index0 }}"
+                            {% if column.filterSeeded %}
+                                data-filter-property="{{ column.property }}"
+                            {% else %}
+                                data-filter-type="text"
+                            {% endif %}
+                        ></th>
+                    {% else %}
+                        <th></th>
+                    {% endif %}
+                {% endfor %}
             </thead>
-                    <tfoot>
-                        {% for column in dt_columns %}
-                            <th>
-                                {% if column.filterable %}
-                                    <input type="text" class="{{ theme_formClasses }}" placeholder="{{ column.title }}" />
-                                {% else %}
-                                    <input type="hidden" />
-                                {% endif %}
-                            </th>
-                        {% endfor %}
-                        {% if dt_multiselect.enabled %}
-                            <th></th>
-                        {% endif %}
-                    </tfoot>
             <tbody>
             </tbody>
         </table>
@@ -69,6 +69,31 @@
                             "next": "{{ 'datatables.datatable.next'|trans({}, 'messages') }}",
                             "last": "{{ 'datatables.datatable.last'|trans({}, 'messages') }}"
                         }
+                    },
+                    "initComplete": function( settings, json ) {
+                        for (target in json.columnFilterChoices) {
+                            var output = '<select class="dt_columnFilter" style="width:auto;">';
+                            //add blank row
+                            output += '<option value=""></option>';
+                            json.columnFilterChoices[target].forEach(function(entry){
+                                output += '<option value="'+entry+'">' + entry +'</option>';
+                            })
+                            output += '</select>';
+                            //console.log(output);
+                            //console.log(target);
+                            var th = $("th[data-filter-property='"+target+"']", this);
+                            th.append(output);
+                        }
+
+                        $("th[data-filter-type='text']").each(function(el){
+                            $(this).append("<input type='text' class='dt_columnFilter' style='width:auto;''>");
+                        });
+
+                        $('.dt_columnFilter').on('change', function(){
+                            var $this = $(this);
+                            var colIndex = $this.closest('th').data('filter-target');
+                            filterDtColumn($this.val(), colIndex)
+                        })
                     }
                 };
 
@@ -126,6 +151,9 @@
                             });
                         }
                     });
+                function filterDtColumn(filter, colIndex) {
+                    table.column(colIndex).search(filter).draw();
+                }
 
                     $("#multiselect_submit").click(function() {
                         var length = $("input:checkbox:checked.multiselect_checkbox").length;

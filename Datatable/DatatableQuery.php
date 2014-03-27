@@ -324,16 +324,32 @@ class DatatableQuery
      */
     public function getColumnValues(ColumnInterface $column, $filter = false)
     {
-        $fields = $this->resolvedTableAliases[$column->getProperty()];
+        $values = $column->getFilterOptions();
+        if ($values !== null) {
+            return $values;
+        }
+
+        $key = $this->metadata->getTableName().'.'.$column->getProperty();
+
+        if (isset($this->resolvedTableAliases[$column->getProperty()])){
+            $fields = $this->resolvedTableAliases[$column->getProperty()];
+            $key = $fields['alias'].'.'.$fields['column'];
+        }
 
         $qb = $this->em->createQueryBuilder();
-        $qb->select('DISTINCT(' . $fields['alias'] . '.' . $fields['column'] . ')');
+        $qb->select('DISTINCT('.$key.')');
         $qb->from($this->metadata->getName(), $this->metadata->getTableName());
-        $qb->addOrderBy($fields['alias'] . '.' . $fields['column'], 'ASC');
+        $qb->andWhere($qb->expr()->isNotNull($key));
+        $qb->addOrderBy($key, 'ASC');
         $this->setLeftJoins($qb);
 
         $this->setWhereCallbacks($qb);
 
-        return $qb->getQuery()->getResult();
+        $values = [];
+        foreach ($qb->getQuery()->getResult() as $row ) {
+            $values[] = $row[1];
+        }
+
+        return $values;
     }
 }

@@ -1,22 +1,8 @@
 {
     {% block common %}
-        {% if column.searchable %}
-            "searchable": true,
-        {% else %}
-            "searchable": false,
-        {% endif %}
-
-        {% if column.sortable %}
-            "sortable": true,
-        {% else %}
-            "sortable": false,
-        {% endif %}
-
-        {% if column.visible %}
-            "visible": true,
-        {% else %}
-            "visible": false,
-        {% endif %}
+        "searchable": {{ column.searchable ? 'true' : 'false' }},
+        "sortable": {{ column.sortable ? 'true' : 'false' }},
+        "visible": {{ column.visible ? 'true' : 'false' }},
 
         "title": "{{ column.title }}",
         "class": "{{ column.class }}",

@@ -279,11 +279,7 @@ class DatatableData implements DatatableDataInterface
 
         foreach ($this->datatable->getColumns() as $column) {
             if ($column->isFilterSeeded()) {
-                $values = [];
-                foreach ($this->datatableQuery->getColumnValues($column) as $row ){
-                    $values[] = $row[1];
-                }
-                $result[$column->getProperty()] = $values;
+                $result[$column->getProperty()] = $this->datatableQuery->getColumnValues($column);
             }
         }
 
