@@ -105,6 +105,13 @@ abstract class AbstractDatatableView implements DatatableViewInterface
     private $customizeOptions;
 
     /**
+     * Array of columns for default ordering
+     *
+     * @var array
+     */
+    private $defaultOrder;
+
+    /**
      * Constructor.
      *
      * @param TwigEngine $templating           The templating service
@@ -161,6 +168,7 @@ abstract class AbstractDatatableView implements DatatableViewInterface
         $options['dt_tableId'] = $this->getName();
         $options['dt_columns'] = $this->columnBuilder->getColumns();
         $options['dt_customizeOptions'] = $this->getCustomizeOptions();
+        $options['dt_defaultOrder'] = $this->getDefaultOrder();
 
         // DatatableThemeInterface Twig variables
 
@@ -399,6 +407,32 @@ abstract class AbstractDatatableView implements DatatableViewInterface
     public function getColumns()
     {
         return $this->columnBuilder->getColumns();
+    }
+
+    /**
+     * Set the default column order
+     * Order format is a 2D array of column number and direction
+     * e.g. array(2 => 'desc', 3 => 'asc')
+     *
+     * @param array $order
+     *
+     * @return $this
+     */
+    public function setDefaultOrder(array $order)
+    {
+        $this->defaultOrder = $order;
+
+        return $this;
+    }
+
+    /**
+     * Get defaultOrder
+     *
+     * @return array (false when not set)
+     */
+    public function getDefaultOrder()
+    {
+        return $this->defaultOrder ?: false;
     }
 }
 
