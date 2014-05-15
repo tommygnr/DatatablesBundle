@@ -54,6 +54,9 @@
                     {% if 'theme_jqueryUi' %}
                         "jQueryUI": true,
                     {% endif %}
+                    {% if dt_defaultOrder %}
+                        "order": [{% for col, order in dt_defaultOrder %}[ {{col}}, "{{order}}" ],{% endfor %}],
+                    {% endif %}
                     "language": {
                         "processing": "{{ 'datatables.datatable.processing'|trans({}, 'messages') }}",
                         "lengthMenu": "{{ 'datatables.datatable.lengthMenu'|trans({}, 'messages') }}",
