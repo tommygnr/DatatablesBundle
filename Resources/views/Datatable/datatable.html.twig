@@ -74,9 +74,16 @@
                             "last": "{{ 'datatables.datatable.last'|trans({}, 'messages') }}"
                         }
                     },
+                    "drawCallback": function( settings ) {
+                        var api = this.api();
+
+                        // Output the data for the visible rows to the browser's console
+                        //console.log( api.rows( {page:'current'} ).data() );
+                    },
+
                     "initComplete": function( settings, json ) {
                         for (target in json.columnFilterChoices) {
-                            var output = '<select class="dt_columnFilter" style="width:auto;">';
+                            var output = '<select class="dt_columnFilter" style="width:100%;">';
                             //add blank row
                             output += '<option value=""></option>';
                             json.columnFilterChoices[target].forEach(function(entry){
@@ -89,7 +96,7 @@
                         }
 
                         $("th[data-filter-type='text']").each(function(el){
-                            $(this).append("<input type='text' class='dt_columnFilter' style='width:auto;''>");
+                            $(this).append("<input type='text' class='dt_columnFilter' style='width:100%;''>");
                         });
 
                         $('.dt_columnFilter').on('change', function(){
