@@ -57,6 +57,9 @@
                     {% if dt_defaultOrder %}
                         "order": [{% for col, order in dt_defaultOrder %}[ {{col}}, "{{order}}" ],{% endfor %}],
                     {% endif %}
+                    {% if dt_stateSaving %}
+                        "stateSave": true,
+                    {% endif %}
                     "language": {
                         "processing": "{{ 'datatables.datatable.processing'|trans({}, 'messages') }}",
                         "lengthMenu": "{{ 'datatables.datatable.lengthMenu'|trans({}, 'messages') }}",
@@ -82,21 +85,37 @@
                     },
 
                     "initComplete": function( settings, json ) {
+                        var getSearchString = function( element ) {
+                            var dtSearchColIndex = $(element).attr('data-filter-target');
+                            var searchString = '';
+                            if (dtSearchColIndex != undefined && settings.aoPreSearchCols[dtSearchColIndex] != undefined) {
+                                searchString = settings.aoPreSearchCols[dtSearchColIndex].sSearch;
+                            }
+                            return searchString;
+                        }
+
                         for (target in json.columnFilterChoices) {
+                            var th = $("th[data-filter-property='"+target+"']", this);
+                            var searchString = getSearchString(th);
+
                             var output = '<select class="dt_columnFilter" style="width:100%;">';
                             //add blank row
                             output += '<option value=""></option>';
                             json.columnFilterChoices[target].forEach(function(entry){
-                                output += '<option value="'+entry+'">' + entry +'</option>';
+                                var selected = '';
+                                if (searchString != '' && searchString == entry) {
+                                    selected = ' selected="selected"';
+                                }
+                                output += '<option value="'+entry+'"'+selected+'>' + entry +'</option>';
                             })
                             output += '</select>';
 
-                            var th = $("th[data-filter-property='"+target+"']", this);
                             th.append(output);
                         }
 
                         $("th[data-filter-type='text']").each(function(el){
-                            $(this).append("<input type='text' class='dt_columnFilter' style='width:100%;''>");
+                            var searchString = getSearchString(this);
+                            $(this).append("<input type='text' class='dt_columnFilter' style='width:100%;' value='"+searchString+"'>");
                         });
 
                         $('.dt_columnFilter').on('change', function(){
