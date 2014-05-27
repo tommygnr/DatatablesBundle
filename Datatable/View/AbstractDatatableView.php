@@ -112,6 +112,20 @@ abstract class AbstractDatatableView implements DatatableViewInterface
     private $defaultOrder;
 
     /**
+     * Enable or disable datatable state saving
+     *
+     * @var boolean
+     */
+    private $stateSaving;
+
+    /**
+     * Set stateDuration
+     *
+     * @var int
+     */
+    private $stateDuration;
+
+    /**
      * Constructor.
      *
      * @param TwigEngine $templating           The templating service
@@ -169,6 +183,12 @@ abstract class AbstractDatatableView implements DatatableViewInterface
         $options['dt_columns'] = $this->columnBuilder->getColumns();
         $options['dt_customizeOptions'] = $this->getCustomizeOptions();
         $options['dt_defaultOrder'] = $this->getDefaultOrder();
+        $options['dt_stateSaving'] = $this->isStateSaving();
+
+        $stateDuration = $this->getStateDuration();
+        if (false !== $stateDuration) {
+            $options['dt_stateDuration'] = $stateDuration;
+        }
 
         // DatatableThemeInterface Twig variables
 
@@ -434,5 +454,52 @@ abstract class AbstractDatatableView implements DatatableViewInterface
     {
         return $this->defaultOrder ?: false;
     }
-}
 
+    /**
+     * Set stateSaving.
+     *
+     * @param boolean $stateSaving
+     *
+     * @return $this
+     */
+    public function setStateSaving($stateSaving)
+    {
+        $this->stateSaving = (boolean) $stateSaving;
+
+        return $this;
+    }
+
+    /**
+     * Is stateSaving.
+     *
+     * @return boolean
+     */
+    public function isStateSaving()
+    {
+        return $this->stateSaving ?: false;
+    }
+
+    /**
+     * Set stateDuration.
+     *
+     * @param $stateDuration
+     *
+     * @return $this
+     */
+    public function setStateDuration($stateDuration)
+    {
+        $this->stateDuration = (int) $stateDuration;
+
+        return $this;
+    }
+
+    /**
+     * Get stateDuration
+     *
+     * @return int, false if not set
+     */
+    public function getStateDuration()
+    {
+        return isset($this->stateDuration) ? $this->stateDuration : false;
+    }
+}
