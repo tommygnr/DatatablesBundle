@@ -60,6 +60,9 @@
                     {% if dt_stateSaving %}
                         "stateSave": true,
                     {% endif %}
+                    {% if dt_stateDuration is defined %}
+                        "stateDuration": {{ dt_stateDuration }},
+                    {% endif %}
                     "language": {
                         "processing": "{{ 'datatables.datatable.processing'|trans({}, 'messages') }}",
                         "lengthMenu": "{{ 'datatables.datatable.lengthMenu'|trans({}, 'messages') }}",
