@@ -125,7 +125,7 @@
                             var $this = $(this);
                             var colIndex = $this.closest('th').data('filter-target');
                             filterDtColumn($this.val(), colIndex)
-                        })
+                        });
                     }
                 };
 
@@ -156,6 +156,28 @@
                         });
                     }
                 });
+
+                {% if dt_clearStateEnabled %}
+                    var clearBtn = '<div id="{{ dt_tableId }}_clearbtn" class="dataTables_clearbtn"><button type="button" class="btn btn-xs">Reset filters</button></div>';
+                    $(selector).closest('.dataTables_wrapper').find('.dt_cb').replaceWith(clearBtn);
+
+                    $(selector+'_wrapper').on('click', '.dataTables_clearbtn', function(event) {
+                        var storageKey = 'DataTables_{{ dt_tableId }}_'+window.location.pathname;
+
+                        var useLS = {% if dt_stateDuration is defined and dt_stateDuration == "-1" %} false {% else %} true {% endif %};
+                        if (!window.localStorage) {
+                            useLS = false;
+                        }
+
+                        if (useLS) {
+                            localStorage.removeItem( storageKey );
+                        } else {
+                            sessionStorage.removeItem( storageKey );
+                        }
+
+                        location.reload();
+                    });
+                {% endif %}
             });
 
             function getSelectedIds() {
