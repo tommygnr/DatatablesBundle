@@ -126,6 +126,13 @@ abstract class AbstractDatatableView implements DatatableViewInterface
     private $stateDuration;
 
     /**
+     * Set clearStateEnabled
+     *
+     * @var int
+     */
+    private $clearStateEnabled = false;
+
+    /**
      * Constructor.
      *
      * @param TwigEngine $templating           The templating service
@@ -184,6 +191,7 @@ abstract class AbstractDatatableView implements DatatableViewInterface
         $options['dt_customizeOptions'] = $this->getCustomizeOptions();
         $options['dt_defaultOrder'] = $this->getDefaultOrder();
         $options['dt_stateSaving'] = $this->isStateSaving();
+        $options['dt_clearStateEnabled'] = $this->isClearStateEnabled();
 
         $stateDuration = $this->getStateDuration();
         if (false !== $stateDuration) {
@@ -502,4 +510,29 @@ abstract class AbstractDatatableView implements DatatableViewInterface
     {
         return isset($this->stateDuration) ? $this->stateDuration : false;
     }
+
+    /**
+     * Set clearStateEnabled.
+     *
+     * @param boolean $clearStateEnabled
+     *
+     * @return $this
+     */
+    public function setClearStateEnabled($clearStateEnabled)
+    {
+        $this->clearStateEnabled = (boolean) $clearStateEnabled;
+
+        return $this;
+    }
+
+    /**
+     * Is clearStateEnabled.
+     *
+     * @return boolean
+     */
+    public function isClearStateEnabled()
+    {
+        return $this->clearStateEnabled;
+    }
+
 }
