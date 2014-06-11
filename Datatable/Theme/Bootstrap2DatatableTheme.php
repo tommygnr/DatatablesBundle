@@ -106,7 +106,7 @@ class Bootstrap2DatatableTheme extends AbstractDatatableTheme
      *
      * @var string
      */
-    protected $dom = "<fl>t<'F'p>";
+    protected $dom = "<f<'dt_cb'>l>t<'F'p>";
 
     /**
      * {@inheritdoc}
@@ -138,6 +138,7 @@ class Bootstrap2DatatableTheme extends AbstractDatatableTheme
                         "<'panel-heading'" .
                             "<'row'" .
                                 "<'col-xs-6 col-md-6'l>" .
+                                "<'dt_cb'>" .
                                 "<'col-xs-6 col-md-6'f>" .
                             ">" .
                         ">" .
