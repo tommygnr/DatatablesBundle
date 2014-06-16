@@ -340,6 +340,7 @@ class DatatableQuery
         $qb->select('DISTINCT('.$key.')');
         $qb->from($this->metadata->getName(), $this->metadata->getTableName());
         $qb->andWhere($qb->expr()->isNotNull($key));
+        $qb->andWhere($qb->expr()->not($qb->expr()->eq($qb->expr()->trim($key), "''")));
         $qb->addOrderBy($key, 'ASC');
         $this->setLeftJoins($qb);
 
