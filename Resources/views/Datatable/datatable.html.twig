@@ -88,18 +88,16 @@
                             var json = table.ajax.json();
                         {% endif %}
 
-                        var lastFilteredColIndex = handleStorageItem('get', 'lastFilteredColIndex');
-                        var firstFilteredColIndex = handleStorageItem('get', 'firstFilteredColIndex');
+                        var lastFilteredCol = handleStorageItem('get', 'lastFilteredCol');
+                        var firstFilteredCol = handleStorageItem('get', 'firstFilteredCol');
 
                         var newColumnFilterChoices = {};
                         for (target in json.columnFilterChoices) {
                             var i = $("th[data-filter-property='"+target+"']").data('filter-target');
-                            if (lastFilteredColIndex && i == lastFilteredColIndex) {
-                                var filterChoices = handleStorageItem('get', 'lastFilteredColOptions');
-                                newColumnFilterChoices[target] = filterChoices.split(',');
-                            } else if (firstFilteredColIndex && i == firstFilteredColIndex) {
-                                var filterChoices = handleStorageItem('get', 'firstFilteredColOptions');
-                                newColumnFilterChoices[target] = filterChoices.split(',');
+                            if (lastFilteredCol != null && i == lastFilteredCol.index) {
+                                newColumnFilterChoices[target] = lastFilteredCol.options;
+                            } else if (firstFilteredCol != null && i == firstFilteredCol.index) {
+                                newColumnFilterChoices[target] = firstFilteredCol.options;
                             } else {
                                 {% if dt_serverSide %}
                                     newColumnFilterChoices[target] = json.columnFilterChoices[target];
@@ -149,7 +147,8 @@
                                 options.push($(this).val());
                             });
 
-                            saveColumnFilters($this.val(), colIndex, options);
+                            var filterOptions = { 'index': colIndex, 'options': options.filter(function(v){return v!==''}) };
+                            saveColumnFilters($this.val(), colIndex, filterOptions);
                             filterDtColumn($this.val(), colIndex)
                         });
                     }
@@ -171,23 +170,23 @@
                     table.column(colIndex).search(filter).draw();
                 }
 
-                function saveColumnFilters(filter, colIndex, options) {
-                    if (filter != '') {
-                        handleStorageItem('set', 'lastFilteredColIndex', colIndex);
-                        handleStorageItem('set', 'lastFilteredColOptions', options.filter(function(v){return v!==''}));
+                function saveColumnFilters(filter, colIndex, filterOptions) {
+                    var firstFilteredCol = handleStorageItem('get', 'firstFilteredCol');
 
-                        var firstSearchedIndex = handleStorageItem('get', 'firstFilteredColIndex');
-                        if (firstSearchedIndex == 'undefined' || firstSearchedIndex == null) {
-                            handleStorageItem('set', 'firstFilteredColIndex', colIndex);
-                            handleStorageItem('set', 'firstFilteredColOptions', options.filter(function(v){return v!==''}));
+                    if (filter != '') {
+                        handleStorageItem('set', 'lastFilteredCol', filterOptions);
+
+                        if (firstFilteredCol == null) {
+                            handleStorageItem('set', 'firstFilteredCol', filterOptions);
                         }
                     } else {
-                        if (colIndex == handleStorageItem('get', 'firstFilteredColIndex')) {
-                            handleStorageItem('remove', 'firstFilteredColIndex');
-                            handleStorageItem('remove', 'firstFilteredColOptions');
-                        } else if (colIndex == handleStorageItem('get', 'lastFilteredColIndex')) {
-                            handleStorageItem('remove', 'lastFilteredColIndex');
-                            handleStorageItem('remove', 'lastFilteredColOptions');
+                        if (firstFilteredCol != null && colIndex == firstFilteredCol.index) {
+                            handleStorageItem('remove', 'firstFilteredCol');
+                        } else {
+                            var lastFilteredCol = handleStorageItem('get', 'lastFilteredCol');
+                            if (lastFilteredCol != null && colIndex == lastFilteredCol.index) {
+                                handleStorageItem('remove', 'lastFilteredCol');
+                            }
                         }
                     }
                 }
@@ -226,10 +225,8 @@
                 function handleStorageItem(action, key, value) {
                     var storageKeys = [];
                     storageKeys['table'] = 'DataTables_{{ dt_tableId }}_'+window.location.pathname;
-                    storageKeys['lastFilteredColIndex'] = 'Datatables_{{ dt_tableId }}_lastFilteredCol_index';
-                    storageKeys['lastFilteredColOptions'] = 'Datatables_{{ dt_tableId }}_lastFilteredCol_options';
-                    storageKeys['firstFilteredColIndex'] = 'Datatables_{{ dt_tableId }}_firstFilteredCol_index';
-                    storageKeys['firstFilteredColOptions'] = 'Datatables_{{ dt_tableId }}_firstFilteredCol_options';
+                    storageKeys['lastFilteredCol'] = 'Datatables_{{ dt_tableId }}_lastFilteredCol';
+                    storageKeys['firstFilteredCol'] = 'Datatables_{{ dt_tableId }}_firstFilteredCol';
 
                     var useLS = {% if dt_stateDuration is defined and dt_stateDuration == "-1" %} false {% else %} true {% endif %};
 
@@ -243,17 +240,17 @@
 
                     if (action == 'get') {
                         if (useLS) {
-                            return localStorage.getItem(storageKeys[key]);
+                            return JSON.parse(localStorage.getItem(storageKeys[key]));
                         } else {
-                            return sessionStorage.getItem(storageKeys[key]);
+                            return JSON.parse(sessionStorage.getItem(storageKeys[key]));
                         }
                     }
 
-                    if (action == 'set' && value != 'undefined') {
+                    if (action == 'set' && value != 'undefined' && value != null) {
                         if (useLS) {
-                            localStorage.setItem(storageKeys[key], value);
+                            localStorage.setItem(storageKeys[key], JSON.stringify(value));
                         } else {
-                            sessionStorage.setItem(storageKeys[key], value);
+                            sessionStorage.setItem(storageKeys[key], JSON.stringify(value));
                         }
                     }
                 }
@@ -264,10 +261,8 @@
 
                     $(selector+'_wrapper').on('click', '.dataTables_clearbtn', function(event) {
                         handleStorageItem('remove', 'table');
-                        handleStorageItem('remove', 'lastFilteredColIndex');
-                        handleStorageItem('remove', 'lastFilteredColOptions');
-                        handleStorageItem('remove', 'firstFilteredColIndex');
-                        handleStorageItem('remove', 'firstFilteredColOptions');
+                        handleStorageItem('remove', 'firstFilteredCol');
+                        handleStorageItem('remove', 'lastFilteredCol');
 
                         location.reload();
                     });
