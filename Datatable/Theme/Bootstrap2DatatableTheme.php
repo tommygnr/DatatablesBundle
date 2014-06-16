@@ -106,7 +106,7 @@ class Bootstrap2DatatableTheme extends AbstractDatatableTheme
      *
      * @var string
      */
-    protected $dom = "<f<'dt_cb'>l>t<'F'p>";
+    protected $dom = "<f<'dt_cb'>lr>t<'F'p>";
 
     /**
      * {@inheritdoc}
