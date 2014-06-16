@@ -322,12 +322,9 @@ class DatatableQuery
      *
      * @return array
      */
-    public function getColumnValues(ColumnInterface $column, $filter = false)
+    public function getColumnValues(ColumnInterface $column, QueryBuilder $qb, $filter = false)
     {
         $values = $column->getFilterOptions();
-        if ($values !== null) {
-            return $values;
-        }
 
         $key = $this->metadata->getTableName().'.'.$column->getProperty();
 
@@ -336,13 +333,15 @@ class DatatableQuery
             $key = $fields['alias'].'.'.$fields['column'];
         }
 
-        $qb = $this->em->createQueryBuilder();
         $qb->select('DISTINCT('.$key.')');
-        $qb->from($this->metadata->getName(), $this->metadata->getTableName());
+        if ($values !== null) {
+            $qb->andWhere($qb->expr()->in($key, ':filterOptions'));
+            $qb->setParameter('filterOptions', $values);
+        }
         $qb->andWhere($qb->expr()->isNotNull($key));
-        $qb->andWhere($qb->expr()->not($qb->expr()->eq($qb->expr()->trim($key), "''")));
-        $qb->addOrderBy($key, 'ASC');
-        $this->setLeftJoins($qb);
+        $qb->andWhere($qb->expr()->neq($qb->expr()->trim($key), "''"));
+        $qb->setFirstResult(null)->setMaxResults(null);
+        $qb->orderBy($key, 'ASC');
 
         $this->setWhereCallbacks($qb);
 

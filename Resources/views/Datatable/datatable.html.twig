@@ -81,44 +81,60 @@
                         }
                     },
                     "drawCallback": function( settings ) {
-                        var api = this.api();
+                        {% if dt_serverSide %}
+                            var api = this.api();
+                            var json = api.ajax.json();
+                        {% else %}
+                            var json = table.ajax.json();
+                        {% endif %}
 
-                        // Output the data for the visible rows to the browser's console
-                        //console.log( api.rows( {page:'current'} ).data() );
+                        var lastFilteredColIndex = handleStorageItem('get', 'lastFilteredColIndex');
+                        var firstFilteredColIndex = handleStorageItem('get', 'firstFilteredColIndex');
+
+                        var newColumnFilterChoices = {};
+                        for (target in json.columnFilterChoices) {
+                            var i = $("th[data-filter-property='"+target+"']").data('filter-target');
+                            if (lastFilteredColIndex && i == lastFilteredColIndex) {
+                                var filterChoices = handleStorageItem('get', 'lastFilteredColOptions');
+                                newColumnFilterChoices[target] = filterChoices.split(',');
+                            } else if (firstFilteredColIndex && i == firstFilteredColIndex) {
+                                var filterChoices = handleStorageItem('get', 'firstFilteredColOptions');
+                                newColumnFilterChoices[target] = filterChoices.split(',');
+                            } else {
+                                {% if dt_serverSide %}
+                                    newColumnFilterChoices[target] = json.columnFilterChoices[target];
+                                {% else %}
+                                    var filterChoices = table.column(i).data().unique().toArray();
+                                    newColumnFilterChoices[target] = filterChoices.filter(function(v){return v!==''});
+                                {% endif %}
+                            }
+                        }
+                        json.columnFilterChoices = newColumnFilterChoices;
+
+                        for (target in json.columnFilterChoices) {
+                            var th = $("th[data-filter-property='"+target+"']");
+                            var searches = getSearches(th, table.settings());
+
+                            th.find('select').html(getFilterOptions(json, target, searches));
+                        }
+
                     },
 
                     "initComplete": function( settings, json ) {
-                        var getSearchString = function( element ) {
-                            var dtSearchColIndex = $(element).attr('data-filter-target');
-                            var searchString = '';
-                            if (dtSearchColIndex != undefined && settings.aoPreSearchCols[dtSearchColIndex] != undefined) {
-                                searchString = settings.aoPreSearchCols[dtSearchColIndex].sSearch;
-                            }
-                            return searchString;
-                        }
-
                         for (target in json.columnFilterChoices) {
                             var th = $("th[data-filter-property='"+target+"']", this);
-                            var searchString = getSearchString(th);
+                            var searches = getSearches(th, settings);
 
                             var output = '<select class="dt_columnFilter" style="width:100%;">';
-                            //add blank row
-                            output += '<option value=""></option>';
-                            json.columnFilterChoices[target].forEach(function(entry){
-                                var selected = '';
-                                if (searchString != '' && searchString == entry) {
-                                    selected = ' selected="selected"';
-                                }
-                                output += '<option value="'+entry+'"'+selected+'>' + entry +'</option>';
-                            })
+                            output += getFilterOptions(json, target, searches);
                             output += '</select>';
 
                             th.append(output);
                         }
 
                         $("th[data-filter-type='text']").each(function(el){
-                            var searchString = getSearchString(this);
-                            $(this).append("<input type='text' class='dt_columnFilter' style='width:100%;' value='"+searchString+"'>");
+                            var searches = getSearches(this, settings);
+                            $(this).append("<input type='text' class='dt_columnFilter' style='width:100%;' value='"+searches[0]+"'>");
                         });
 
                         $('.dt_columnFilter').on('click', function(e){
@@ -128,6 +144,12 @@
                         $('.dt_columnFilter').on('change', function(){
                             var $this = $(this);
                             var colIndex = $this.closest('th').data('filter-target');
+                            var options = [];
+                            $this.closest('th').find('select option').each(function() {
+                                options.push($(this).val());
+                            });
+
+                            saveColumnFilters($this.val(), colIndex, options);
                             filterDtColumn($this.val(), colIndex)
                         });
                     }
@@ -149,6 +171,46 @@
                     table.column(colIndex).search(filter).draw();
                 }
 
+                function saveColumnFilters(filter, colIndex, options) {
+                    if (filter != '') {
+                        handleStorageItem('set', 'lastFilteredColIndex', colIndex);
+                        handleStorageItem('set', 'lastFilteredColOptions', options.filter(function(v){return v!==''}));
+
+                        var firstSearchedIndex = handleStorageItem('get', 'firstFilteredColIndex');
+                        if (firstSearchedIndex == 'undefined' || firstSearchedIndex == null) {
+                            handleStorageItem('set', 'firstFilteredColIndex', colIndex);
+                            handleStorageItem('set', 'firstFilteredColOptions', options.filter(function(v){return v!==''}));
+                        }
+                    } else {
+                        if (colIndex == handleStorageItem('get', 'firstFilteredColIndex')) {
+                            handleStorageItem('remove', 'firstFilteredColIndex');
+                            handleStorageItem('remove', 'firstFilteredColOptions');
+                        } else if (colIndex == handleStorageItem('get', 'lastFilteredColIndex')) {
+                            handleStorageItem('remove', 'lastFilteredColIndex');
+                            handleStorageItem('remove', 'lastFilteredColOptions');
+                        }
+                    }
+                }
+
+                function getSearches( element, settings ) {
+                    var dtSearchColIndex = $(element).attr('data-filter-target');
+                    return table.columns(dtSearchColIndex).search();
+                }
+
+                function getFilterOptions(json, target, searches) {
+                    //add blank row
+                    var output = '<option value=""></option>';
+                    json.columnFilterChoices[target].forEach(function(entry){
+                        var selected = '';
+                        if (searches[0] != '' && searches[0] == entry) {
+                            selected = ' selected="selected"';
+                        }
+                        output += '<option value="'+entry+'"'+selected+'>' + entry +'</option>';
+                    })
+
+                    return output;
+                }
+
                 $(".multiselect_checkall").click(function(event) {
                     if(this.checked) {
                         $("input:checkbox.multiselect_checkbox").each(function() {
@@ -161,23 +223,51 @@
                     }
                 });
 
+                function handleStorageItem(action, key, value) {
+                    var storageKeys = [];
+                    storageKeys['table'] = 'DataTables_{{ dt_tableId }}_'+window.location.pathname;
+                    storageKeys['lastFilteredColIndex'] = 'Datatables_{{ dt_tableId }}_lastFilteredCol_index';
+                    storageKeys['lastFilteredColOptions'] = 'Datatables_{{ dt_tableId }}_lastFilteredCol_options';
+                    storageKeys['firstFilteredColIndex'] = 'Datatables_{{ dt_tableId }}_firstFilteredCol_index';
+                    storageKeys['firstFilteredColOptions'] = 'Datatables_{{ dt_tableId }}_firstFilteredCol_options';
+
+                    var useLS = {% if dt_stateDuration is defined and dt_stateDuration == "-1" %} false {% else %} true {% endif %};
+
+                    if (action == 'remove') {
+                        if (useLS) {
+                            localStorage.removeItem(storageKeys[key]);
+                        } else {
+                            sessionStorage.removeItem(storageKeys[key]);
+                        }
+                    }
+
+                    if (action == 'get') {
+                        if (useLS) {
+                            return localStorage.getItem(storageKeys[key]);
+                        } else {
+                            return sessionStorage.getItem(storageKeys[key]);
+                        }
+                    }
+
+                    if (action == 'set' && value != 'undefined') {
+                        if (useLS) {
+                            localStorage.setItem(storageKeys[key], value);
+                        } else {
+                            sessionStorage.setItem(storageKeys[key], value);
+                        }
+                    }
+                }
+
                 {% if dt_clearStateEnabled %}
                     var clearBtn = '<div id="{{ dt_tableId }}_clearbtn" class="dataTables_clearbtn"><button type="button" class="btn btn-xs">Reset filters</button></div>';
                     $(selector).closest('.dataTables_wrapper').find('.dt_cb').replaceWith(clearBtn);
 
                     $(selector+'_wrapper').on('click', '.dataTables_clearbtn', function(event) {
-                        var storageKey = 'DataTables_{{ dt_tableId }}_'+window.location.pathname;
-
-                        var useLS = {% if dt_stateDuration is defined and dt_stateDuration == "-1" %} false {% else %} true {% endif %};
-                        if (!window.localStorage) {
-                            useLS = false;
-                        }
-
-                        if (useLS) {
-                            localStorage.removeItem( storageKey );
-                        } else {
-                            sessionStorage.removeItem( storageKey );
-                        }
+                        handleStorageItem('remove', 'table');
+                        handleStorageItem('remove', 'lastFilteredColIndex');
+                        handleStorageItem('remove', 'lastFilteredColOptions');
+                        handleStorageItem('remove', 'firstFilteredColIndex');
+                        handleStorageItem('remove', 'firstFilteredColOptions');
 
                         location.reload();
                     });
