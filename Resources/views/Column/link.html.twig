@@ -7,6 +7,13 @@
         var attributes = "";
 
         {% for key, value in column.routeParameters %}
+            {# for association links, check the parent element exists in the data #}
+            {% if '.' in value %}
+                {% set parent = value|split('.')|first %}
+                if (!full.{{ parent }}) {
+                    return '';
+                }
+            {% endif %}
             routeParameters["{{ key }}"] = full.{{ value }};
         {% endfor %}
         {% for key, value in column.routeStaticParameters %}
