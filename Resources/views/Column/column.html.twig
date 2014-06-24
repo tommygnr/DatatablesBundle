@@ -18,9 +18,7 @@
         {% endif %}
 
         {% if column.render %}
-            "render": function(data, type, full) {
-                return {{ column.render }}(data, type, full);
-            },
+            "render": {{ column.render|raw }},
         {% endif %}
     {% endblock %}
 },
