@@ -36,6 +36,13 @@ class LinkColumn extends BaseColumn
     private $routeParameters;
 
     /**
+     * The action route static parameters.
+     *
+     * @var array
+     */
+    private $routeStaticParameters;
+
+    /**
      * HTML attributes.
      *
      * @var array
@@ -63,6 +70,9 @@ class LinkColumn extends BaseColumn
         if (array_key_exists('parameters', $options)) {
             $this->setRouteParameters($options['parameters']);
         }
+        if (array_key_exists('staticParameters', $options)) {
+            $this->setRouteStaticParameters($options['staticParameters']);
+        }
         if (array_key_exists('attributes', $options)) {
             $this->setAttributes($options['attributes']);
         }
@@ -80,6 +90,7 @@ class LinkColumn extends BaseColumn
 
         $this->setRoute(null);
         $this->setRouteParameters(array());
+        $this->setRouteStaticParameters(array());
         $this->setAttributes(array());
     }
 
@@ -129,6 +140,30 @@ class LinkColumn extends BaseColumn
     public function getRouteParameters()
     {
         return $this->routeParameters;
+    }
+
+    /**
+     * Set route static parameters.
+     *
+     * @param array $staticParameters
+     *
+     * @return $this
+     */
+    public function setRouteStaticParameters(array $staticParameters)
+    {
+        $this->routeStaticParameters = $staticParameters;
+
+        return $this;
+    }
+
+    /**
+     * Get route static parameters.
+     *
+     * @return array
+     */
+    public function getRouteStaticParameters()
+    {
+        return $this->routeStaticParameters;
     }
 
     /**

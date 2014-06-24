@@ -9,6 +9,9 @@
         {% for key, value in column.routeParameters %}
             routeParameters["{{ key }}"] = full.{{ value }};
         {% endfor %}
+        {% for key, value in column.routeStaticParameters %}
+            routeParameters["{{ key }}"] = "{{ value }}";
+        {% endfor %}
 
         var route  = Routing.generate("{{ column.route }}", routeParameters);
 
