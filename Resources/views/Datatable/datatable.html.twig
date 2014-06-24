@@ -13,6 +13,13 @@
                             {% else %}
                                 data-filter-type="text"
                             {% endif %}
+
+                            {% if column.getTrueLabel is defined %}
+                                data-filter-label-true="{{ column.getTrueLabel }}"
+                            {% endif %}
+                            {% if column.getFalseLabel is defined %}
+                                data-filter-label-false="{{ column.getFalseLabel }}"
+                            {% endif %}
                         ></th>
                     {% else %}
                         <th></th>
@@ -113,7 +120,7 @@
                             var th = $("th[data-filter-property='"+target+"']");
                             var searches = getSearches(th, table.settings());
 
-                            th.find('select').html(getFilterOptions(json, target, searches));
+                            th.find('select').html(getFilterOptions(th, json, target, searches));
                         }
 
                     },
@@ -124,7 +131,7 @@
                             var searches = getSearches(th, settings);
 
                             var output = '<select class="dt_columnFilter" style="width:100%;">';
-                            output += getFilterOptions(json, target, searches);
+                            output += getFilterOptions(th, json, target, searches);
                             output += '</select>';
 
                             th.append(output);
@@ -196,7 +203,9 @@
                     return table.columns(dtSearchColIndex).search();
                 }
 
-                function getFilterOptions(json, target, searches) {
+                function getFilterOptions(element, json, target, searches) {
+                    var $this = element;
+
                     //add blank row
                     var output = '<option value=""></option>';
                     json.columnFilterChoices[target].forEach(function(entry){
@@ -204,7 +213,20 @@
                         if (searches[0] != '' && searches[0] == entry) {
                             selected = ' selected="selected"';
                         }
-                        output += '<option value="'+entry+'"'+selected+'>' + entry +'</option>';
+
+                        var displayValue = entry;
+
+                        var trueValue = $this.data('filter-label-true');
+                        if (trueValue != 'undefined' && entry == 1) {
+                            displayValue = trueValue;
+                        }
+
+                        var falseValue = $this.data('filter-label-false');
+                        if (falseValue != 'undefined' && entry == 0) {
+                            displayValue = falseValue;
+                        }
+
+                        output += '<option value="'+entry+'"'+selected+'>' + displayValue +'</option>';
                     })
 
                     return output;
