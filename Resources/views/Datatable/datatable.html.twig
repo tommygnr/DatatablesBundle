@@ -304,7 +304,7 @@
             var moment_locale = {% if moment_locale is defined %}"{{ moment_locale }}"{% else %}"{{ app.request.locale }}"{% endif %};
 
             function render_datetime(data, type, full, localizedFormat) {
-                if (typeof data.timestamp != 'undefined') {
+                if (data && typeof data.timestamp != 'undefined') {
                     moment.lang(moment_locale);
                     return moment.unix(data.timestamp).format(localizedFormat);
                 } else {
@@ -313,7 +313,7 @@
             }
 
             function render_timeago(data, type, full) {
-                if (typeof data.timestamp != 'undefined') {
+                if (data && typeof data.timestamp != 'undefined') {
                     moment.lang(moment_locale);
                     return moment.unix(data.timestamp).fromNow();
                 } else {
