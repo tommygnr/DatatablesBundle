@@ -60,7 +60,7 @@ class ArrayColumn extends BaseColumn
             $prev = array_slice($fieldsArray, count($fieldsArray) - 2, 1);
             $last = array_slice($fieldsArray, count($fieldsArray) - 1, 1);
             $this->setData($prev[0]);
-            $this->setRender('[, ].' . $last[0]);
+            $this->setRender('"[, ].' . $last[0].'"');
         } else {
             throw new Exception('An association is expected.');
         }
