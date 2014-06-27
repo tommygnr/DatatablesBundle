@@ -146,7 +146,11 @@
                             e.stopPropagation();
                         })
 
-                        $('.dt_columnFilter').on('change', function(){
+                        $('.dt_columnFilter').on('change keyup', function(event){
+                            if (event.type == 'keyup' && event.which != 13) {
+                                return false;
+                            }
+
                             var $this = $(this);
                             var colIndex = $this.closest('th').data('filter-target');
                             var options = [];
