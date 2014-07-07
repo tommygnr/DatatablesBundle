@@ -343,8 +343,6 @@ class DatatableQuery
         $qb->setFirstResult(null)->setMaxResults(null);
         $qb->orderBy($key, 'ASC');
 
-        $this->setWhereCallbacks($qb);
-
         $values = [];
         foreach ($qb->getQuery()->getResult() as $row ) {
             $values[] = $row[1];
