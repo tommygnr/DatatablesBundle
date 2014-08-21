@@ -177,6 +177,12 @@
                     ]
                 });
 
+                {% if dt_clearExistingState %}
+                    handleStorageItem('remove', 'table');
+                    handleStorageItem('remove', 'firstFilteredCol');
+                    handleStorageItem('remove', 'lastFilteredCol');
+                {% endif %}
+
                 var selector = "#{{ dt_tableId }}";
                 table = $(selector).DataTable(config);
 
