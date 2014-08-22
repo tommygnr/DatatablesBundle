@@ -70,6 +70,9 @@
                     {% if dt_stateDuration is defined %}
                         "stateDuration": {{ dt_stateDuration }},
                     {% endif %}
+                    {% if dt_defaultColumnSearches %}
+                        "searchCols": [{% for col, search in dt_defaultColumnSearches %}{% if search %}{ "search": "{{search}}"}{% else %}null{% endif %}, {% endfor %}],
+                    {% endif %}
                     "language": {
                         "processing": "{{ 'datatables.datatable.processing'|trans({}, 'messages') }}",
                         "lengthMenu": "{{ 'datatables.datatable.lengthMenu'|trans({}, 'messages') }}",
@@ -173,6 +176,12 @@
                         {% endfor %}
                     ]
                 });
+
+                {% if dt_clearExistingState %}
+                    handleStorageItem('remove', 'table');
+                    handleStorageItem('remove', 'firstFilteredCol');
+                    handleStorageItem('remove', 'lastFilteredCol');
+                {% endif %}
 
                 var selector = "#{{ dt_tableId }}";
                 table = $(selector).DataTable(config);

@@ -112,6 +112,13 @@ abstract class AbstractDatatableView implements DatatableViewInterface
     private $defaultOrder;
 
     /**
+     * Array of columns default searches
+     *
+     * @var array
+     */
+    private $defaultColumnSearches;
+
+    /**
      * Enable or disable datatable state saving
      *
      * @var boolean
@@ -131,6 +138,13 @@ abstract class AbstractDatatableView implements DatatableViewInterface
      * @var int
      */
     private $clearStateEnabled = false;
+
+    /**
+     * Set clearExistingState
+     *
+     * @var int
+     */
+    private $clearExistingState = false;
 
     /**
      * Constructor.
@@ -190,8 +204,10 @@ abstract class AbstractDatatableView implements DatatableViewInterface
         $options['dt_columns'] = $this->columnBuilder->getColumns();
         $options['dt_customizeOptions'] = $this->getCustomizeOptions();
         $options['dt_defaultOrder'] = $this->getDefaultOrder();
+        $options['dt_defaultColumnSearches'] = $this->getDefaultColumnSearches();
         $options['dt_stateSaving'] = $this->isStateSaving();
         $options['dt_clearStateEnabled'] = $this->isClearStateEnabled();
+        $options['dt_clearExistingState'] = $this->getClearExistingState();
 
         $stateDuration = $this->getStateDuration();
         if (false !== $stateDuration) {
@@ -464,6 +480,49 @@ abstract class AbstractDatatableView implements DatatableViewInterface
     }
 
     /**
+     * Set the default column search values
+     * Order format is a 2D array of column number / entity property and search term
+     * e.g. array(2 => 'hello', 'name' => 'world')
+     *
+     * @param array $colSearch
+     *
+     * @return $this
+     */
+    public function setDefaultColumnSearches(array $searches)
+    {
+        $this->defaultColumnSearches = $searches;
+
+        return $this;
+    }
+
+    /**
+     * Get defaultColumnSearches
+     *
+     * @return array (false when not set)
+     */
+    public function getDefaultColumnSearches()
+    {
+        if (!is_array($this->defaultColumnSearches)) {
+            return $this->defaultColumnSearches;
+        }
+
+        $colSearches = array();
+        $columns = $this->columnBuilder->getColumns();
+
+        for($i = 0; $i < count($columns); $i++) {
+            if (array_key_exists($columns[$i]->getProperty(), $this->defaultColumnSearches)) {
+                $colSearches[$i] = $this->defaultColumnSearches[$columns[$i]->getProperty()];
+            } elseif (array_key_exists($i, $this->defaultColumnSearches)) {
+                $colSearches[$i] = $this->defaultColumnSearches[$i];
+            } else {
+                $colSearches[$i] = false;
+            }
+        }
+
+        return $colSearches;
+    }
+
+    /**
      * Set stateSaving.
      *
      * @param boolean $stateSaving
@@ -535,4 +594,27 @@ abstract class AbstractDatatableView implements DatatableViewInterface
         return $this->clearStateEnabled;
     }
 
+    /**
+     * Set clearExistingState.
+     *
+     * @param boolean $clearExistingState
+     *
+     * @return $this
+     */
+    public function setClearExistingState($clearExistingState)
+    {
+        $this->clearExistingState = (boolean) $clearExistingState;
+
+        return $this;
+    }
+
+    /**
+     * Get clearExistingState.
+     *
+     * @return boolean
+     */
+    public function getClearExistingState()
+    {
+        return $this->clearExistingState;
+    }
 }
