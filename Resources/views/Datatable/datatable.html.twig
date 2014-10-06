@@ -71,7 +71,7 @@
                         "stateDuration": {{ dt_stateDuration }},
                     {% endif %}
                     {% if dt_defaultColumnSearches %}
-                        "searchCols": [{% for col, search in dt_defaultColumnSearches %}{% if search %}{ "search": "{{search}}"}{% else %}null{% endif %}, {% endfor %}],
+                        "searchCols": [{% for col, search in dt_defaultColumnSearches %}{% if search %}{ "search": "{{search|raw}}"}{% else %}null{% endif %}, {% endfor %}],
                     {% endif %}
                     "language": {
                         "processing": "{{ 'datatables.datatable.processing'|trans({}, 'messages') }}",
