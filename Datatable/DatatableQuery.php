@@ -161,7 +161,7 @@ class DatatableQuery
     public function getCountAllResults($rootEntityIdentifier)
     {
         $qb = $this->em->createQueryBuilder();
-        $qb->select('count(' . $this->metadata->getTableName() . '.' . $rootEntityIdentifier . ')');
+        $qb->select('count('.$this->metadata->getTableName().'.'.$rootEntityIdentifier.')');
         $qb->from($this->metadata->getName(), $this->metadata->getTableName());
         $this->setLeftJoins($qb);
 
@@ -178,7 +178,7 @@ class DatatableQuery
     public function setSelectFrom(array $selectColumns)
     {
         foreach ($selectColumns as $tableAlias => $selectColumns) {
-            $this->qb->addSelect('partial ' . $tableAlias . '.{' . implode(',', $selectColumns) . '}');
+            $this->qb->addSelect('partial '.$tableAlias.'.{'.implode(',', $selectColumns).'}');
         }
 
         $this->qb->from($this->metadata->getName(), $this->metadata->getTableName());
@@ -227,7 +227,7 @@ class DatatableQuery
                     $orExpr->add($qb->expr()->like($searchField, "?$i"));
                 }
             }
-            $qb->setParameter($i, "%" . $globalSearchString . "%");
+            $qb->setParameter($i, "%".$globalSearchString."%");
             $i++;
 
             $qb->andWhere($orExpr);
@@ -242,7 +242,7 @@ class DatatableQuery
                 //TODO This should be read from server side(PHP) config, not client side
                 $searchField = $this->allColumns[$key];
                 $andExpr->add($qb->expr()->like($searchField, "?$i"));
-                $qb->setParameter($i, "%" . $column['search']['value'] . "%");
+                $qb->setParameter($i, "%".$column['search']['value']."%");
                 $i++;
             }
         }
@@ -316,7 +316,6 @@ class DatatableQuery
         return $query;
     }
 
-
     /**
      * Returns an array of column values, optionally filtered.
      *
@@ -328,7 +327,7 @@ class DatatableQuery
 
         $key = $this->metadata->getTableName().'.'.$column->getProperty();
 
-        if (isset($this->resolvedTableAliases[$column->getProperty()])){
+        if (isset($this->resolvedTableAliases[$column->getProperty()])) {
             $fields = $this->resolvedTableAliases[$column->getProperty()];
             $key = $fields['alias'].'.'.$fields['column'];
         }
@@ -344,7 +343,7 @@ class DatatableQuery
         $qb->orderBy($key, 'ASC');
 
         $values = [];
-        foreach ($qb->getQuery()->getResult() as $row ) {
+        foreach ($qb->getQuery()->getResult() as $row) {
             $values[] = $row[1];
         }
 

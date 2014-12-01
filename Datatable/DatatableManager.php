@@ -42,7 +42,6 @@ class DatatableManager
      */
     private $serializer;
 
-
     /**
      * @param RegistryInterface $doctrine   The doctrine service
      * @param Request           $request    The request service
@@ -87,4 +86,3 @@ class DatatableManager
         );
     }
 }
-

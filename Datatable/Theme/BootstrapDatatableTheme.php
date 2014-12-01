@@ -106,7 +106,6 @@ class BootstrapDatatableTheme extends AbstractDatatableTheme
      */
     protected $dom = "<'row'<'col-sm-4'l><'dt_cb'><'col-sm-8'f>r>t<'row'<'col-sm-3'i><'col-sm-9'p>>";
 
-
     /**
      * {@inheritdoc}
      */
@@ -131,27 +130,27 @@ class BootstrapDatatableTheme extends AbstractDatatableTheme
     public function setPanel()
     {
         $dom =
-            "<'row'" .
-                "<'col-sm-12 col-md-12'" .
-                    "<'panel panel-default'" .
-                        "<'panel-heading'" .
-                            "<'row'" .
-                                "<'col-xs-6 col-md-6'l>" .
-                                "<'dt_cb'>" .
-                                "<'col-xs-6 col-md-6'f>" .
-                            ">" .
-                        ">" .
-                        "<'panel-body'" .
-                            "<'table-responsive't>" .
-                        ">" .
-                        "<'panel-footer'" .
-                            "<'row'" .
-                                "<'col-xs-6 col-md-6'i>" .
-                                "<'col-xs-6 col-md-6'p>" .
-                            ">" .
-                        ">" .
-                    ">" .
-                ">" .
+            "<'row'".
+                "<'col-sm-12 col-md-12'".
+                    "<'panel panel-default'".
+                        "<'panel-heading'".
+                            "<'row'".
+                                "<'col-xs-6 col-md-6'l>".
+                                "<'dt_cb'>".
+                                "<'col-xs-6 col-md-6'f>".
+                            ">".
+                        ">".
+                        "<'panel-body'".
+                            "<'table-responsive't>".
+                        ">".
+                        "<'panel-footer'".
+                            "<'row'".
+                                "<'col-xs-6 col-md-6'i>".
+                                "<'col-xs-6 col-md-6'p>".
+                            ">".
+                        ">".
+                    ">".
+                ">".
             ">";
 
         $this->setDom($dom);

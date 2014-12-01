@@ -21,7 +21,6 @@ class BaseDatatableTheme extends AbstractDatatableTheme
      */
     protected $tableClasses = 'display';
 
-
     /**
      * {@inheritdoc}
      */

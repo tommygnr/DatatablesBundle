@@ -113,7 +113,6 @@ class Multiselect implements MultiselectInterface
             throw new Exception("The position {$position} is not supported.");
         }
 
-
         return $this;
     }
 

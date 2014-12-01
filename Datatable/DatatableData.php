@@ -151,7 +151,7 @@ class DatatableData implements DatatableDataInterface
      */
     private function setAssociations(array $associationParts, ClassMetadata $metadata, $rootPath = null, $parentTableAlias = null)
     {
-        if ($rootPath == null){
+        if ($rootPath == null) {
             $rootPath = implode('.', $associationParts);
         }
 
@@ -163,7 +163,7 @@ class DatatableData implements DatatableDataInterface
             $targetTableName = $targetMeta->getTableName();
             $targetIdentifiers = $targetMeta->getIdentifierFieldNames();
             $targetRootIdentifier = array_shift($targetIdentifiers);
-            $targetTableAlias = $targetTableName . '_' . $column;
+            $targetTableAlias = $targetTableName.'_'.$column;
             if (!array_key_exists($targetTableAlias, $this->selectColumns)) {
                 $this->addSelectColumn($targetMeta, $targetRootIdentifier, $targetTableAlias);
 
@@ -171,8 +171,8 @@ class DatatableData implements DatatableDataInterface
 
                 $this->addJoin(
                     array(
-                        'source' => $parentTableAlias . '.' . $column,
-                        'target' => $targetTableAlias
+                        'source' => $parentTableAlias.'.'.$column,
+                        'target' => $targetTableAlias,
                     )
                 );
             }
@@ -187,7 +187,7 @@ class DatatableData implements DatatableDataInterface
                 $this->datatableQuery->addResolvedTableAlias($rootPath, $parentTableAlias, $column);
             }
 
-            $this->allColumns[] = $parentTableAlias . '.' . $column;
+            $this->allColumns[] = $parentTableAlias.'.'.$column;
         }
 
         return $this;
@@ -204,7 +204,6 @@ class DatatableData implements DatatableDataInterface
         $this->addSelectColumn($this->metadata, $this->rootEntityIdentifier);
 
         foreach ($this->datatable->getColumns() as $column) {
-
             // association delimiter found (e.g. 'posts.comments.title')?
             if (strstr($column->getProperty(), '.') !== false) {
                 $array = explode('.', $column->getProperty());
@@ -215,7 +214,7 @@ class DatatableData implements DatatableDataInterface
                     $this->addSelectColumn($this->metadata, $column->getProperty());
                 }
 
-                $this->allColumns[] = $this->metadata->getTableName() . '.' . $column->getProperty();
+                $this->allColumns[] = $this->metadata->getTableName().'.'.$column->getProperty();
             }
         }
 
@@ -240,8 +239,6 @@ class DatatableData implements DatatableDataInterface
         $this->datatableQuery->setLeftJoins($this->datatableQuery->getQb());
         $this->datatableQuery->setWhere($this->datatableQuery->getQb());
         $this->datatableQuery->setWhereCallbacks($this->datatableQuery->getQb());
-
-
 
         return $this;
     }

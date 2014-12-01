@@ -12,7 +12,6 @@
 namespace TommyGNR\DatatablesBundle\Column;
 
 use TommyGNR\DatatablesBundle\Column\AbstractColumn as BaseColumn;
-
 use Exception;
 
 /**

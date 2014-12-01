@@ -19,7 +19,6 @@ use TommyGNR\DatatablesBundle\Column\AbstractColumn as BaseColumn;
  */
 class Column extends BaseColumn
 {
-
     /**
      * {@inheritdoc}
      */

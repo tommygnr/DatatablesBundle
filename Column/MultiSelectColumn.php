@@ -12,7 +12,6 @@
 namespace TommyGNR\DatatablesBundle\Column;
 
 use TommyGNR\DatatablesBundle\Column\AbstractColumn as BaseColumn;
-
 use Exception;
 
 /**
@@ -21,7 +20,7 @@ use Exception;
  */
 class MultiSelectColumn extends BaseColumn
 {
-     /**
+    /**
      * Constructor.
      *
      * @param null|string $property An entity's property
@@ -67,6 +66,5 @@ class MultiSelectColumn extends BaseColumn
         parent::setDefaults();
 
         $this->setRender('render_bulkaction');
-
     }
 }

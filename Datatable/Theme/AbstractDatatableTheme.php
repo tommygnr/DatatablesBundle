@@ -58,7 +58,6 @@ abstract class AbstractDatatableTheme implements DatatableThemeInterface
      */
     protected $jQueryUi = false;
 
-
     //-------------------------------------------------
     // Singleton
     //-------------------------------------------------
@@ -67,7 +66,6 @@ abstract class AbstractDatatableTheme implements DatatableThemeInterface
      * @var DatatableThemeInterface
      */
     private static $instance;
-
 
     /**
      * Ctor.
@@ -92,7 +90,7 @@ abstract class AbstractDatatableTheme implements DatatableThemeInterface
     {
         $className = get_called_class();
 
-        if (!isset(self::$instance )) {
+        if (!isset(self::$instance)) {
             self::$instance = new $className();
         }
 
@@ -198,7 +196,6 @@ abstract class AbstractDatatableTheme implements DatatableThemeInterface
 
         return $this;
     }
-
 
     /**
      * {@inheritdoc}

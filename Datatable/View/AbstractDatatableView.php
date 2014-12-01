@@ -13,7 +13,6 @@ namespace TommyGNR\DatatablesBundle\Datatable\View;
 
 use TommyGNR\DatatablesBundle\Column\ColumnBuilder;
 use TommyGNR\DatatablesBundle\Datatable\Theme\DatatableThemeInterface;
-
 use Symfony\Bundle\TwigBundle\TwigEngine;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -24,7 +23,6 @@ use Exception;
  */
 abstract class AbstractDatatableView implements DatatableViewInterface
 {
-
     private $entity;
 
     /**
@@ -149,10 +147,10 @@ abstract class AbstractDatatableView implements DatatableViewInterface
     /**
      * Constructor.
      *
-     * @param TwigEngine            $templating           The templating service
-     * @param TranslatorInterface   $translator           The translator service
-     * @param Router                $router               The router service
-     * @param array                 $defaultLayoutOptions The default layout options
+     * @param TwigEngine          $templating           The templating service
+     * @param TranslatorInterface $translator           The translator service
+     * @param Router              $router               The router service
+     * @param array               $defaultLayoutOptions The default layout options
      */
     public function __construct(TwigEngine $templating, TranslatorInterface $translator, Router $router, array $defaultLayoutOptions)
     {
@@ -509,7 +507,7 @@ abstract class AbstractDatatableView implements DatatableViewInterface
         $colSearches = array();
         $columns = $this->columnBuilder->getColumns();
 
-        for($i = 0; $i < count($columns); $i++) {
+        for ($i = 0; $i < count($columns); $i++) {
             if (array_key_exists($columns[$i]->getProperty(), $this->defaultColumnSearches)) {
                 $colSearches[$i] = $this->defaultColumnSearches[$columns[$i]->getProperty()];
             } elseif (array_key_exists($i, $this->defaultColumnSearches)) {
