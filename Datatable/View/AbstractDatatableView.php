@@ -16,7 +16,7 @@ use TommyGNR\DatatablesBundle\Datatable\Theme\DatatableThemeInterface;
 
 use Symfony\Bundle\TwigBundle\TwigEngine;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
-use Symfony\Component\Translation\Translator;
+use Symfony\Component\Translation\TranslatorInterface;
 use Exception;
 
 /**
@@ -37,7 +37,7 @@ abstract class AbstractDatatableView implements DatatableViewInterface
     /**
      * The translator service.
      *
-     * @var Translator
+     * @var TranslatorInterface
      */
     private $translator;
 
@@ -149,12 +149,12 @@ abstract class AbstractDatatableView implements DatatableViewInterface
     /**
      * Constructor.
      *
-     * @param TwigEngine $templating           The templating service
-     * @param Translator $translator           The translator service
-     * @param Router     $router               The router service
-     * @param array      $defaultLayoutOptions The default layout options
+     * @param TwigEngine            $templating           The templating service
+     * @param TranslatorInterface   $translator           The translator service
+     * @param Router                $router               The router service
+     * @param array                 $defaultLayoutOptions The default layout options
      */
-    public function __construct(TwigEngine $templating, Translator $translator, Router $router, array $defaultLayoutOptions)
+    public function __construct(TwigEngine $templating, TranslatorInterface $translator, Router $router, array $defaultLayoutOptions)
     {
         $this->templating = $templating;
         $this->translator = $translator;
@@ -239,7 +239,7 @@ abstract class AbstractDatatableView implements DatatableViewInterface
     /**
      * Get translator.
      *
-     * @return Translator
+     * @return TranslatorInterface
      */
     public function getTranslator()
     {
