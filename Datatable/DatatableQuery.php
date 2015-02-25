@@ -332,7 +332,8 @@ class DatatableQuery
             $key = $fields['alias'].'.'.$fields['column'];
         }
 
-        $qb->select('DISTINCT('.$key.')');
+        $qb->select($key);
+        $qb->distinct();
         if ($values !== null) {
             $qb->andWhere($qb->expr()->in($key, ':filterOptions'));
             $qb->setParameter('filterOptions', $values);
@@ -344,7 +345,7 @@ class DatatableQuery
 
         $values = [];
         foreach ($qb->getQuery()->getResult() as $row) {
-            $values[] = $row[1];
+            $values[] = array_pop($row);
         }
 
         return $values;
