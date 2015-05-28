@@ -1,0 +1,15 @@
+{% extends 'TommyGNRDatatablesBundle:Column:column.html.twig' %}
+
+{% block common %}
+    "searchable": {{ column.searchable ? 'true' : 'false' }},
+    "sortable": {{ column.sortable ? 'true' : 'false' }},
+    "visible": {{ column.visible ? 'true' : 'false' }},
+
+    "title": "{{ column.title }}",
+    "class": "{{ column.class }}",
+    "defaultContent": "{{ column.defaultContent }}",
+    "width": "{{ column.width }}",
+    "renderContent": function(data) {
+        {{ column.template|raw }}
+    },
+{% endblock %}

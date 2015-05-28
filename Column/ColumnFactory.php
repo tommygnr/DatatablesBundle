@@ -69,6 +69,9 @@ class ColumnFactory implements ColumnFactoryInterface
             case 'multiselect':
                 $this->column = new MultiSelectColumn($property);
                 break;
+            case 'expandable':
+                $this->column = new ExpandableColumn($property);
+                break;
             default:
                 throw new Exception("The {$name} column is not supported.");
         }
