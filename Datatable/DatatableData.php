@@ -131,6 +131,7 @@ class DatatableData implements DatatableDataInterface
      */
     private function addSelectColumn(ClassMetadata $metadata, $column, $columnTableName = null)
     {
+        if ($column === null) return $this;
         if (in_array($column, $metadata->getFieldNames())) {
             $this->selectColumns[($columnTableName ?: $metadata->getTableName())][] = $column;
         } else {
@@ -208,7 +209,7 @@ class DatatableData implements DatatableDataInterface
             if (strstr($column->getProperty(), '.') !== false) {
                 $array = explode('.', $column->getProperty());
                 $this->setAssociations($array, $this->metadata);
-            } elseif ($column->getProperty() !== null) {
+            } else {
                 // no association found
                 if ($column !== $this->rootEntityIdentifier) {
                     $this->addSelectColumn($this->metadata, $column->getProperty());

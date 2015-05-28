@@ -302,6 +302,22 @@
                         location.reload();
                     });
                 {% endif %}
+                
+                $(selector + " tbody").on('click', 'td.expandable', function(){
+                    var tr = $(this).closest('tr');
+                    var row = table.row(tr);
+                    var column = $(this).closest('table').find('th').eq($(this).index());
+                    if (row.child.isShown()) {
+                        row.child.hide();
+                        tr.removeClass('shown');
+                    } else {
+                        var columnIndex = table.column(column).index();
+                        var settingData = table.settings()[0].aoColumns[columnIndex];
+                        tr.addClass('shown');
+                        row.child(settingData.renderContent(row.data())).show();
+                    }
+                })
+                
             });
 
             function getSelectedIds() {

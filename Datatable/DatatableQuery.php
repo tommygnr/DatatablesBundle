@@ -223,6 +223,7 @@ class DatatableQuery
                 //TODO This should be read from server side(PHP) config, not client side
                 $dtColumn = $dtColumns[$key];
                 if ($dtColumn->isSearchable()) {
+                    if ($dtColumn->getProperty() === null) continue;
                     $searchField = $this->allColumns[$key];
                     $orExpr->add($qb->expr()->like($searchField, "?$i"));
                 }
