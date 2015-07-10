@@ -163,11 +163,10 @@ class DatatableData implements DatatableDataInterface
             $targetTableName = $targetMeta->getTableName();
             $targetIdentifiers = $targetMeta->getIdentifierFieldNames();
             $targetRootIdentifier = array_shift($targetIdentifiers);
-            $targetTableAlias = $targetTableName.'_'.$column;
+            $parentTableAlias = $parentTableAlias ?: $metadata->getTableName();
+            $targetTableAlias = $parentTableAlias.'_'.$targetTableName.'_'.$column;
             if (!array_key_exists($targetTableAlias, $this->selectColumns)) {
                 $this->addSelectColumn($targetMeta, $targetRootIdentifier, $targetTableAlias);
-
-                $parentTableAlias = $parentTableAlias ?: $metadata->getTableName();
 
                 $this->addJoin(
                     array(
