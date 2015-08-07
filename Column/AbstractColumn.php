@@ -389,6 +389,11 @@ abstract class AbstractColumn implements ColumnInterface
         return $this;
     }
 
+    public function filterProcess($qb, $field, $alias, $value) {
+      $qb->setParameter($alias, "%".$value."%");
+      return $qb->expr()->like($field, "?$alias");
+    }
+
     /**
      * {@inheritdoc}
      */

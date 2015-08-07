@@ -213,7 +213,10 @@
 
                 function getSearches( element, settings ) {
                     var dtSearchColIndex = $(element).attr('data-filter-target');
-                    return table.columns(dtSearchColIndex).search();
+                    var searches = table.columns(dtSearchColIndex).search();
+                    if (searches[0] === 'true') searches[0] = true;
+                    if (searches[0] === 'false') searches[0] = false;
+                    return searches;
                 }
 
                 function getFilterOptions(element, json, target, searches) {
@@ -223,7 +226,7 @@
                     var output = '<option value=""></option>';
                     json.columnFilterChoices[target].forEach(function(entry){
                         var selected = '';
-                        if (searches[0] != '' && searches[0] == entry) {
+                        if (searches[0] !== '' && searches[0] == entry) {
                             selected = ' selected="selected"';
                         }
 
@@ -274,11 +277,14 @@
                     }
 
                     if (action == 'get') {
+                      var returnValue = '';
                         if (useLS) {
-                            return JSON.parse(localStorage.getItem(storageKeys[key]));
+                            returnValue = JSON.parse(localStorage.getItem(storageKeys[key]));
                         } else {
-                            return JSON.parse(sessionStorage.getItem(storageKeys[key]));
+                            returnValue = JSON.parse(sessionStorage.getItem(storageKeys[key]));
                         }
+                        if (returnValue === 'true') returnValue = true;
+                        if (returnValue === 'false') returnValue = false;
                     }
 
                     if (action == 'set' && value != 'undefined' && value != null) {
@@ -302,7 +308,7 @@
                         location.reload();
                     });
                 {% endif %}
-                
+
                 $(selector + " tbody").on('click', 'td.expandable', function(){
                     var tr = $(this).closest('tr');
                     var row = table.row(tr);
@@ -317,7 +323,7 @@
                         row.child(settingData.renderContent(row.data())).show();
                     }
                 })
-                
+
             });
 
             function getSelectedIds() {

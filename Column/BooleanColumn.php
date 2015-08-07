@@ -114,6 +114,12 @@ class BooleanColumn extends BaseColumn
         $this->setFalseLabel(null);
     }
 
+    public function filterProcess($qb, $field, $alias, $value) {
+      $value = $value == "true" ? 1 : 0;
+      $qb->setParameter($alias, $value);
+      return $qb->expr()->eq($field, "?$alias");
+    }
+
     /**
      * Set false icon.
      *
