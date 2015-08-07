@@ -242,8 +242,8 @@ class DatatableQuery
             if ($dtColumn->isFilterable() && $column['search']['value'] != '') {
                 //TODO This should be read from server side(PHP) config, not client side
                 $searchField = $this->allColumns[$key];
-                $andExpr->add($qb->expr()->like($searchField, "?$i"));
-                $qb->setParameter($i, "%".$column['search']['value']."%");
+                $expression = $dtColumn->filterProcess($qb, $searchField, $i, $column['search']['value']);
+                $andExpr->add($expression);
                 $i++;
             }
         }
