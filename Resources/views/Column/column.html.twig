@@ -20,5 +20,8 @@
         {% if column.render %}
             "render": {{ column.render|raw }},
         {% endif %}
+        {% if column.seedMapFunction %}
+            "seedMapFn": {{ column.seedMapFunction|raw }},
+        {% endif %}
     {% endblock %}
 },

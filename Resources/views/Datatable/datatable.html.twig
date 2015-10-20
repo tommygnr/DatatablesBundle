@@ -242,6 +242,11 @@
                             displayValue = falseValue;
                         }
 
+                        var colData = table.settings()[0].aoColumns[$this.data('filter-target')];
+                        if (colData.hasOwnProperty('seedMapFn')) {
+                          displayValue = colData.seedMapFn(entry);
+                        }
+
                         output += '<option value="'+entry+'"'+selected+'>' + displayValue +'</option>';
                     })
 
