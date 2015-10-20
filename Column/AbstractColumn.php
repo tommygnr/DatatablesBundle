@@ -114,6 +114,12 @@ abstract class AbstractColumn implements ColumnInterface
     private $width;
 
     /**
+     * Custom mapping function for display a value in the filterSeeded dropdown
+     *
+     */
+     private $seedMapFunction;
+
+    /**
      * Constructor.
      *
      * @param null|string $property An entity's property
@@ -350,6 +356,23 @@ abstract class AbstractColumn implements ColumnInterface
     /**
      * {@inheritdoc}
      */
+    public function setSeedMapFunction($seedMapFunction)
+    {
+        $this->seedMapFunction = $seedMapFunction;
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSeedMapFunction()
+    {
+        return $this->seedMapFunction;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function setOptions(array $options)
     {
         if (array_key_exists('searchable', $options)) {
@@ -384,6 +407,9 @@ abstract class AbstractColumn implements ColumnInterface
         }
         if (array_key_exists('width', $options)) {
             $this->setWidth($options['width']);
+        }
+        if (array_key_exists('seedMapFunction', $options)) {
+            $this->setSeedMapFunction($options['seedMapFunction']);
         }
 
         return $this;
