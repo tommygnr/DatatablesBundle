@@ -58,7 +58,7 @@
                         "dom": "{{ theme_dom|raw }}",
                     {% endif %}
                     "displayLength": {{ dt_displayLength }},
-                    {% if 'theme_jqueryUi' %}
+                    {% if theme_jqueryUi %}
                         "jQueryUI": true,
                     {% endif %}
                     {% if dt_defaultOrder %}
@@ -133,16 +133,22 @@
                             var th = $("th[data-filter-property='"+target+"']", this);
                             var searches = getSearches(th, settings);
 
-                            var output = '<select class="dt_columnFilter" style="width:100%;">';
+                            var output = '<select class="dt_columnFilter dt_input" style="width:100%;">';
                             output += getFilterOptions(th, json, target, searches);
                             output += '</select>';
-
+                            var contents = th.html();
+                            var element = $("<span class='dt_label'></span>");
+                            element.html(contents);
+                            th.html(element);
                             th.append(output);
                         }
 
                         $("th[data-filter-type='text']").each(function(el){
                             var searches = getSearches(this, settings);
-                            $(this).append("<input type='text' class='dt_columnFilter' style='width:100%;' value='"+searches[0]+"'>");
+                            var element = $("<span class='dt_label'></span>");
+                            element.html($(this).html());
+                            $(this).html(element);
+                            $(this).append("<input type='text' class='dt_columnFilter dt_input' style='width:100%;' value='"+searches[0]+"'>");
                         });
 
                         $('.dt_columnFilter').on('click', function(e){
