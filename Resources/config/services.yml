@@ -3,13 +3,16 @@ services:
     tommygnr_datatables.serializer.method:
         class: Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer
 
+    tommygnr_datatables.serializer.datetime:
+        class: TommyGNR\DatatablesBundle\Datatable\DateTimeNormalizer
+
     tommygnr_datatables.serializer.encoder.json:
         class: Symfony\Component\Serializer\Encoder\JsonEncoder
 
     tommygnr_datatables.serializer:
         class: Symfony\Component\Serializer\Serializer
         arguments:
-            - [@tommygnr_datatables.serializer.method]
+            - [@tommygnr_datatables.serializer.datetime, @tommygnr_datatables.serializer.method]
             - [@tommygnr_datatables.serializer.encoder.json]
 
     tommygnr_datatables.datatable.view.factory:
