@@ -34,362 +34,50 @@
 
     {% block tommygnr_datatable_js %}
 
-        <script>
-            var table;
-
-            $(document).ready(function () {
-
-                var config = {
-                    {% if dt_processing %}
-                        "processing": true,
-                    {% else %}
-                        "processing": false,
-                    {% endif %}
-                    {% if dt_serverSide %}
-                        "serverSide": true,
-                        "ajax": "{{ dt_ajaxSource }}",
-                    {% else %}
-                        "data": {{ dt_data|raw }},
-                    {% endif %}
-                    {% if theme_pagination %}
-                        "paginationType": "{{ theme_pagination }}",
-                    {% endif %}
-                    {% if theme_dom %}
-                        "dom": "{{ theme_dom|raw }}",
-                    {% endif %}
-                    "displayLength": {{ dt_displayLength }},
-                    {% if theme_jqueryUi %}
-                        "jQueryUI": true,
-                    {% endif %}
-                    {% if dt_defaultOrder %}
-                        "order": [{% for col, order in dt_defaultOrder %}[ {{col}}, "{{order}}" ],{% endfor %}],
-                    {% endif %}
-                    {% if dt_stateSaving %}
-                        "stateSave": true,
-                    {% endif %}
-                    {% if dt_stateDuration is defined %}
-                        "stateDuration": {{ dt_stateDuration }},
-                    {% endif %}
-                    {% if dt_defaultColumnSearches %}
-                        "searchCols": [{% for col, search in dt_defaultColumnSearches %}{% if search %}{ "search": "{{search|raw}}"}{% else %}null{% endif %}, {% endfor %}],
-                    {% endif %}
-                    "language": {
-                        "processing": "{{ 'datatables.datatable.processing'|trans({}, 'messages') }}",
-                        "lengthMenu": "{{ 'datatables.datatable.lengthMenu'|trans({}, 'messages') }}",
-                        "zeroRecords": "{{ 'datatables.datatable.zeroRecords'|trans({}, 'messages') }}",
-                        "info": "{{ 'datatables.datatable.info'|trans({}, 'messages') }}",
-                        "infoEmpty": "{{ 'datatables.datatable.infoEmpty'|trans({}, 'messages') }}",
-                        "infoFiltered": "{{ 'datatables.datatable.infoFiltered'|trans({}, 'messages') }}",
-                        "infoPostFix": "{{ 'datatables.datatable.infoPostFix'|trans({}, 'messages') }}",
-                        "search": "{{ 'datatables.datatable.search'|trans({}, 'messages') }}",
-                        "url": "",
-                        "paginate": {
-                            "first": "{{ 'datatables.datatable.first'|trans({}, 'messages') }}",
-                            "previous": "{{ 'datatables.datatable.previous'|trans({}, 'messages') }}",
-                            "next": "{{ 'datatables.datatable.next'|trans({}, 'messages') }}",
-                            "last": "{{ 'datatables.datatable.last'|trans({}, 'messages') }}"
-                        }
-                    },
-                    "drawCallback": function( settings ) {
-                        {% if dt_serverSide %}
-                            var api = this.api();
-                            var json = api.ajax.json();
-                        {% else %}
-                            var json = table.ajax.json();
-                        {% endif %}
-
-                        var lastFilteredCol = handleStorageItem('get', 'lastFilteredCol');
-                        var firstFilteredCol = handleStorageItem('get', 'firstFilteredCol');
-
-                        var newColumnFilterChoices = {};
-                        for (target in json.columnFilterChoices) {
-                            var i = $("th[data-filter-property='"+target+"']").data('filter-target');
-                            if (lastFilteredCol != null && i == lastFilteredCol.index) {
-                                newColumnFilterChoices[target] = lastFilteredCol.options;
-                            } else if (firstFilteredCol != null && i == firstFilteredCol.index) {
-                                newColumnFilterChoices[target] = firstFilteredCol.options;
-                            } else {
-                                {% if dt_serverSide %}
-                                    newColumnFilterChoices[target] = json.columnFilterChoices[target];
-                                {% else %}
-                                    var filterChoices = table.column(i).data().unique().toArray();
-                                    newColumnFilterChoices[target] = filterChoices.filter(function(v){return v!==''});
-                                {% endif %}
-                            }
-                        }
-                        json.columnFilterChoices = newColumnFilterChoices;
-
-                        for (target in json.columnFilterChoices) {
-                            var th = $("th[data-filter-property='"+target+"']");
-                            var searches = getSearches(th, table.settings());
-
-                            th.find('select').html(getFilterOptions(th, json, target, searches));
-                        }
-
-                    },
-
-                    "initComplete": function( settings, json ) {
-                        for (target in json.columnFilterChoices) {
-                            var th = $("th[data-filter-property='"+target+"']", this);
-                            var searches = getSearches(th, settings);
-
-                            var output = '<select class="dt_columnFilter dt_input" style="width:100%;">';
-                            output += getFilterOptions(th, json, target, searches);
-                            output += '</select>';
-                            var contents = th.html();
-                            var element = $("<span class='dt_label'></span>");
-                            element.html(contents);
-                            th.html(element);
-                            th.append(output);
-                        }
-
-                        $("th[data-filter-type='text']").each(function(el){
-                            var searches = getSearches(this, settings);
-                            var element = $("<span class='dt_label'></span>");
-                            element.html($(this).html());
-                            $(this).html(element);
-                            $(this).append("<input type='text' class='dt_columnFilter dt_input' style='width:100%;' value='"+searches[0]+"'>");
-                        });
-
-                        $('.dt_columnFilter').on('click', function(e){
-                            e.stopPropagation();
-                        });
-
-                        $('.dt_columnFilter').on('change keyup', function(event){
-                            if (event.type == 'keyup' && event.which != 13) {
-                                return false;
-                            }
-
-                            var $this = $(this);
-                            var colIndex = $this.closest('th').data('filter-target');
-                            var options = [];
-                            $this.closest('th').find('select option').each(function() {
-                                options.push($(this).val());
-                            });
-
-                            var filterOptions = { 'index': colIndex, 'options': options.filter(function(v){return v!==''}) };
-                            saveColumnFilters($this.val(), colIndex, filterOptions);
-                            filterDtColumn($this.val(), colIndex)
-                        });
-                    }
-                };
-
-                $.extend(config, {
-                    "columns": [
-                        {# columns #}
-                        {% for column in dt_columns %}
-                            {% include "TommyGNRDatatablesBundle:Column:" ~ column.getClassName ~ ".html.twig" %}
-                        {% endfor %}
-                    ]
-                });
-
-                {% if dt_clearExistingState %}
-                    handleStorageItem('remove', 'table');
-                    handleStorageItem('remove', 'firstFilteredCol');
-                    handleStorageItem('remove', 'lastFilteredCol');
-                {% endif %}
-
-                var selector = "#{{ dt_tableId }}";
-                table = $(selector).DataTable(config);
-
-                function filterDtColumn(filter, colIndex) {
-                    table.column(colIndex).search(filter).draw();
-                }
-
-                function saveColumnFilters(filter, colIndex, filterOptions) {
-                    var firstFilteredCol = handleStorageItem('get', 'firstFilteredCol');
-
-                    if (filter != '') {
-                        handleStorageItem('set', 'lastFilteredCol', filterOptions);
-
-                        if (firstFilteredCol == null) {
-                            handleStorageItem('set', 'firstFilteredCol', filterOptions);
-                        }
-                    } else {
-                        if (firstFilteredCol != null && colIndex == firstFilteredCol.index) {
-                            handleStorageItem('remove', 'firstFilteredCol');
-                        } else {
-                            var lastFilteredCol = handleStorageItem('get', 'lastFilteredCol');
-                            if (lastFilteredCol != null && colIndex == lastFilteredCol.index) {
-                                handleStorageItem('remove', 'lastFilteredCol');
-                            }
-                        }
+        <script type="application/json" id="datatable-config">
+        {
+            "datatables": {
+                "processing": {{ dt_processing ? 'true' : 'false' }},
+                "serverSide": {{ dt_serverSide ? 'true' : 'false' }},
+                "ajax": "{{ dt_ajaxSource }}",
+                "data": {{ dt_data is defined ? dt_data|raw : 'false' }},
+                "paginationType": "{{ theme_pagination }}",
+                "dom": {{ theme_dom ? ('"' ~ theme_dom ~ '"')|raw : 'false'}},
+                "displayLength": {{ dt_displayLength }},
+                "jQueryUI": {{ theme_jqueryUi ? 'true' : 'false' }},
+                "order": [{% for col, order in dt_defaultOrder %}[ {{col}}, "{{order}}" ],{% endfor %}],
+                "stateSave": {{ dt_stateSaving ? 'true' : 'false' }},
+                "stateDuration": {{ dt_stateDuration is defined ? dt_stateDuration : 'false' }},
+                "language": {
+                    "processing": "{{ 'datatables.datatable.processing'|trans({}, 'messages') }}",
+                    "lengthMenu": "{{ 'datatables.datatable.lengthMenu'|trans({}, 'messages') }}",
+                    "zeroRecords": "{{ 'datatables.datatable.zeroRecords'|trans({}, 'messages') }}",
+                    "info": "{{ 'datatables.datatable.info'|trans({}, 'messages') }}",
+                    "infoEmpty": "{{ 'datatables.datatable.infoEmpty'|trans({}, 'messages') }}",
+                    "infoFiltered": "{{ 'datatables.datatable.infoFiltered'|trans({}, 'messages') }}",
+                    "infoPostFix": "{{ 'datatables.datatable.infoPostFix'|trans({}, 'messages') }}",
+                    "search": "{{ 'datatables.datatable.search'|trans({}, 'messages') }}",
+                    "url": "",
+                    "paginate": {
+                        "first": "{{ 'datatables.datatable.first'|trans({}, 'messages') }}",
+                        "previous": "{{ 'datatables.datatable.previous'|trans({}, 'messages') }}",
+                        "next": "{{ 'datatables.datatable.next'|trans({}, 'messages') }}",
+                        "last": "{{ 'datatables.datatable.last'|trans({}, 'messages') }}"
                     }
                 }
-
-                function getSearches( element, settings ) {
-                    var dtSearchColIndex = $(element).attr('data-filter-target');
-                    var searches = table.columns(dtSearchColIndex).search();
-                    if (searches[0] === 'true') searches[0] = true;
-                    if (searches[0] === 'false') searches[0] = false;
-                    return searches;
-                }
-
-                function getFilterOptions(element, json, target, searches) {
-                    var $this = element;
-
-                    //add blank row
-                    var output = '<option value=""></option>';
-                    json.columnFilterChoices[target].forEach(function(entry){
-                        var selected = '';
-                        if (searches[0] !== '' && searches[0] == entry) {
-                            selected = ' selected="selected"';
-                        }
-
-                        var displayValue = entry;
-
-                        var trueValue = $this.data('filter-label-true');
-                        if (trueValue != 'undefined' && entry == 1) {
-                            displayValue = trueValue;
-                        }
-
-                        var falseValue = $this.data('filter-label-false');
-                        if (falseValue != 'undefined' && entry == 0) {
-                            displayValue = falseValue;
-                        }
-
-                        var colData = table.settings()[0].aoColumns[$this.data('filter-target')];
-                        if (colData.hasOwnProperty('seedMapFn')) {
-                          displayValue = colData.seedMapFn(entry);
-                        }
-
-                        output += '<option value="'+entry+'"'+selected+'>' + displayValue +'</option>';
-                    })
-
-                    return output;
-                }
-
-                $(".multiselect_checkall").click(function(event) {
-                    if(this.checked) {
-                        $("input:checkbox.multiselect_checkbox").each(function() {
-                            this.checked = true;
-                        });
-                    } else {
-                        $("input:checkbox.multiselect_checkbox").each(function() {
-                            this.checked = false;
-                        });
-                    }
-                });
-
-                function handleStorageItem(action, key, value) {
-                    var storageKeys = [];
-                    storageKeys['table'] = 'DataTables_{{ dt_tableId }}_'+window.location.pathname;
-                    storageKeys['lastFilteredCol'] = 'Datatables_{{ dt_tableId }}_lastFilteredCol';
-                    storageKeys['firstFilteredCol'] = 'Datatables_{{ dt_tableId }}_firstFilteredCol';
-
-                    var useLS = {% if dt_stateDuration is defined and dt_stateDuration == "-1" %} false {% else %} true {% endif %};
-
-                    if (action == 'remove') {
-                        if (useLS) {
-                            localStorage.removeItem(storageKeys[key]);
-                        } else {
-                            sessionStorage.removeItem(storageKeys[key]);
-                        }
-                    }
-
-                    if (action == 'get') {
-                      var returnValue = '';
-                        if (useLS) {
-                            returnValue = JSON.parse(localStorage.getItem(storageKeys[key]));
-                        } else {
-                            returnValue = JSON.parse(sessionStorage.getItem(storageKeys[key]));
-                        }
-                        if (returnValue === 'true') returnValue = true;
-                        if (returnValue === 'false') returnValue = false;
-                    }
-
-                    if (action == 'set' && value != 'undefined' && value != null) {
-                        if (useLS) {
-                            localStorage.setItem(storageKeys[key], JSON.stringify(value));
-                        } else {
-                            sessionStorage.setItem(storageKeys[key], JSON.stringify(value));
-                        }
-                    }
-                }
-
-                {% if dt_clearStateEnabled %}
-                    var clearBtn = '<div id="{{ dt_tableId }}_clearbtn" class="dataTables_clearbtn"><button type="button" class="btn btn-xs">Reset filters</button></div>';
-                    $(selector).closest('.dataTables_wrapper').find('.dt_cb').replaceWith(clearBtn);
-
-                    $(selector+'_wrapper').on('click', '.dataTables_clearbtn', function(event) {
-                        handleStorageItem('remove', 'table');
-                        handleStorageItem('remove', 'firstFilteredCol');
-                        handleStorageItem('remove', 'lastFilteredCol');
-
-                        location.reload();
-                    });
-                {% endif %}
-
-                $(selector + " tbody").on('click', 'td.expandable', function(){
-                    var tr = $(this).closest('tr');
-                    var row = table.row(tr);
-                    var column = $(this).closest('table').find('th').eq($(this).index());
-                    if (row.child.isShown()) {
-                        row.child.hide();
-                        tr.removeClass('shown');
-                    } else {
-                        var columnIndex = table.column(column).index();
-                        var settingData = table.settings()[0].aoColumns[columnIndex];
-                        tr.addClass('shown');
-                        row.child(settingData.renderContent(row.data())).show();
-                    }
-                })
-
-            });
-
-            function getSelectedIds() {
-                var ids = new Array();
-                $("input:checkbox:checked.multiselect_checkbox").each(function(index, el){
-                    ids.push($(el).val());
-                })
-                return ids;
-            }
-
+            },
+            "moment_locale": "{{ moment_locale is defined ? moment_locale : app.request.locale }}",
+            "columns": {{ dt_columns|json_encode|raw }},
+            "clearExistingState": {{ dt_clearExistingState ? 'true' : 'false' }},
+            "clearStateEnabled": {{ dt_clearStateEnabled ? 'true' : 'false' }},
+            "tableId": "{{ dt_tableId }}"
+        }
         </script>
-
+        <script type="text/javascript" src="{{ asset('build/datatable.js') }}"></script>
     {% endblock %}
 
     {% block tommygnr_datatable_render_functions %}
 
-        <script>
-
-            function render_boolean_icons(data, type, full, trueIcon, falseIcon, trueLabel, falseLabel) {
-                if ('' == trueIcon && '' == trueLabel) {
-                    trueLabel = 'true';
-                }
-
-                if ('' == falseIcon && '' == falseLabel) {
-                    falseLabel = 'false';
-                }
-
-                if (data == true) {
-                    return "<span class='" + trueIcon + "'></span> " + trueLabel;
-                } else {
-                    return "<span class='" + falseIcon + "'></span> " + falseLabel;
-                }
-            }
-
-            var moment_locale = {% if moment_locale is defined %}"{{ moment_locale }}"{% else %}"{{ app.request.locale }}"{% endif %};
-
-            function render_datetime(data, type, full, localizedFormat) {
-                if (data && typeof data != 'undefined') {
-                    moment.lang(moment_locale);
-                    return moment.unix(data).format(localizedFormat);
-                } else {
-                    return null;
-                }
-            }
-
-            function render_timeago(data, type, full) {
-                if (data && typeof data != 'undefined') {
-                    moment.lang(moment_locale);
-                    return moment.unix(data).fromNow();
-                } else {
-                    return null;
-                }
-            }
-
-        </script>
 
     {% endblock %}
 

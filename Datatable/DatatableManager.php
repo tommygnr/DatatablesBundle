@@ -12,7 +12,7 @@
 namespace TommyGNR\DatatablesBundle\Datatable;
 
 use Symfony\Bridge\Doctrine\RegistryInterface;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Serializer\Serializer;
 use TommyGNR\DatatablesBundle\Datatable\View\AbstractDatatableView;
 
@@ -47,10 +47,10 @@ class DatatableManager
      * @param Request           $request    The request service
      * @param Serializer        $serializer The serializer service
      */
-    public function __construct(RegistryInterface $doctrine, Request $request, Serializer $serializer)
+    public function __construct(RegistryInterface $doctrine, RequestStack $requestStack, Serializer $serializer)
     {
         $this->doctrine = $doctrine;
-        $this->request = $request;
+        $this->request = $requestStack->getCurrentRequest();
         $this->serializer = $serializer;
     }
 

@@ -42,7 +42,7 @@ abstract class AbstractDatatableTheme implements DatatableThemeInterface
      *
      * @var string
      */
-    protected $pagination = null;
+    protected $pagination = 'simple_numbers';
 
     /**
      * Position of the feature elements (filter input etc).
