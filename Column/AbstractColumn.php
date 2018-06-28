@@ -15,7 +15,7 @@ namespace TommyGNR\DatatablesBundle\Column;
  * Class AbstractColumn
  *
  */
-abstract class AbstractColumn implements ColumnInterface
+abstract class AbstractColumn implements ColumnInterface, \JsonSerializable
 {
     /**
      * An entity's property.
@@ -127,6 +127,22 @@ abstract class AbstractColumn implements ColumnInterface
     public function __construct($property = null)
     {
         $this->property = $property;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'data' => $this->getData(),
+            'className' => $this->getClassName(),
+            'searchable' => $this->isSearchable(),
+            'visible' => $this->isVisible(),
+            'title' => $this->getTitle(),
+            'class' => $this->getClass(),
+            'defaultContent' => $this->getDefaultContent(),
+            'width' => $this->getWidth(),
+            'render' => $this->getRender(),
+            'seedMapFn' => $this->getSeedMapFunction(),
+        ];
     }
 
     /**

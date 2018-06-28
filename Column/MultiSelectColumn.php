@@ -36,6 +36,16 @@ class MultiSelectColumn extends BaseColumn
         parent::__construct($property);
     }
 
+    public function jsonSerialize()
+    {
+        $data = parent::jsonSerialize();
+        $data['title'] = "<input type='checkbox' name='multiselect_checkall' class='multiselect_checkall' />";
+        $data['data'] = null;
+        $data['searchable'] = false;
+        $data['sortable'] = false;
+        return $data;
+    }
+
     /**
      * {@inheritdoc}
      */
