@@ -185,6 +185,22 @@ interface ColumnInterface
     public function getWidth();
 
     /**
+     * Get Extra Data
+     *
+     * @return mixed
+     */
+    public function getExtraData();
+
+    /**
+     * Set Extra Data
+     *
+     * @param mixed|null
+     *
+     * @return self
+     */
+    public function setExtraData($extraData);
+
+    /**
      * Set options.
      *
      * @param array $options

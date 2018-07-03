@@ -119,6 +119,11 @@ abstract class AbstractColumn implements ColumnInterface, \JsonSerializable
      */
      private $seedMapFunction;
 
+     /**
+      * Extra static data for the rendering or seed map functions
+      */
+     private $extraData;
+
     /**
      * Constructor.
      *
@@ -142,6 +147,7 @@ abstract class AbstractColumn implements ColumnInterface, \JsonSerializable
             'width' => $this->getWidth(),
             'render' => $this->getRender(),
             'seedMapFn' => $this->getSeedMapFunction(),
+            'extra_data' => $this->getExtraData(),
         ];
     }
 
@@ -389,6 +395,22 @@ abstract class AbstractColumn implements ColumnInterface, \JsonSerializable
     /**
      * {@inheritdoc}
      */
+    public function setExtraData($extraData)
+    {
+        $this->extraData = $extraData;
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getExtraData() {
+        return $this->extraData;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function setOptions(array $options)
     {
         if (array_key_exists('searchable', $options)) {
@@ -427,6 +449,9 @@ abstract class AbstractColumn implements ColumnInterface, \JsonSerializable
         if (array_key_exists('seedMapFunction', $options)) {
             $this->setSeedMapFunction($options['seedMapFunction']);
         }
+        if (array_key_exists('extra_data', $options)) {
+            $this->setExtraData($options['extra_data']);
+        }
 
         return $this;
     }
@@ -446,11 +471,12 @@ abstract class AbstractColumn implements ColumnInterface, \JsonSerializable
         $this->setFilterable(false);
         $this->setSortable(true);
         $this->setVisible(true);
-        $this->setTitle(null);
+        $this->setTitle('');
         $this->setRender(null);
         $this->setClass('');
         $this->setDefaultContent(null);
         $this->setWidth(null);
+        $this->setExtraData([]);
     }
 
     /**

@@ -64,6 +64,16 @@ class BooleanColumn extends BaseColumn
         parent::__construct($property);
     }
 
+    public function jsonSerialize()
+    {
+        return array_merge(parent::jsonSerialize(), [
+            'true_icon' => $this->getTrueIcon(),
+            'false_icon' => $this->getFalseIcon(),
+            'true_label' => $this->getTrueLabel(),
+            'false_label' => $this->getFalseLabel(),
+        ]);
+    }
+
     /**
      * {@inheritdoc}
      */

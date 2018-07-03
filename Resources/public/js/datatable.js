@@ -3,9 +3,10 @@ require('datatables.net');
 var table;
 var moment_locale = 'en-au';
 
+window.DatatableRenderObjects = {};
+
 $(document).ready(function () {
     var serverConfig = JSON.parse(document.getElementById("datatable-config").textContent);
-    console.log(serverConfig);
     moment_locale = serverConfig.moment_locale;
     var config = {
         "drawCallback": function( settings ) {
@@ -98,6 +99,40 @@ $(document).ready(function () {
     serverConfig.columns.forEach(v => {
         if (v.className == 'multiselect') {
             v.render = render_multiselect;
+            return;
+        }
+        if (v.className == 'link') {
+            v.render = (data, type, full) => {
+                var routeParams = {};
+                if (!Array.isArray(v.routeParameters)) {
+                    Object.keys(v.routeParameters).forEach(key => {
+                        var val = v.routeParameters[key].split('.').pop();
+                        if (!full[val]) return false;
+                        routeParams[key] = full[val];
+                    });
+                }
+                if (!Array.isArray(v.routeStaticParameters)) {
+                    routeParams = Object.assign(routeParams, v.routeStaticParameters);
+                }
+                var route = Routing.generate(v.route, routeParams);
+                var attributes = Object.keys(v.attributes).map(a => a + '="' + v.attributes[a] + '"').join(" ");
+                return "<a href='" + route + "' " + attributes + ">" + data + "</a>";
+            };
+            return;
+        }
+        if (v.className == 'boolean') {
+            v.render = (data, type, full) => {
+                return render_boolean_icons(data, type, full, v.true_icon, v.false_icon, v.true_label, v.false_label);
+            };
+            return;
+        }
+        if (v.render && window.DatatableRenderObjects.hasOwnProperty(v.render) && typeof v.render == 'string') {
+            let fnIndex = v.render;
+            v.render = (data, type, full) => window.DatatableRenderObjects[fnIndex](data, type, full, v.extra_data);
+        }
+        if (v.seedMapFn && window.DatatableRenderObjects.hasOwnProperty(v.seedMapFn) && typeof v.seedMapFn == 'string') {
+            let fnIndex = v.seedMapFn;
+            v.seedMapFn = (val) => window.DatatableRenderObjects[fnIndex](val, v.extra_data);
         }
     });
 
@@ -195,13 +230,13 @@ $(document).ready(function () {
 
     function handleStorageItem(action, key, value) {
         var storageKeys = [];
-        storageKeys['table'] = 'DataTables_' + serverConfig.tableId + window.location.pathname;
+        storageKeys['table'] = 'DataTables_' + serverConfig.tableId + '_' + window.location.pathname;
         storageKeys['lastFilteredCol'] = 'Datatables_' + serverConfig.tableId + '_lastFilteredCol';
         storageKeys['firstFilteredCol'] = 'Datatables_' + serverConfig.tableId + '_firstFilteredCol';
 
-        var useLS = false;
-        if (serverConfig.datatables.stateDuration == '-1') {
-            useLS = true;
+        var useLS = true;
+        if (serverConfig.datatables.stateDuration == -1) {
+            useLS = false;
         }
 
         if (action == 'remove') {
@@ -233,7 +268,7 @@ $(document).ready(function () {
     }
 
     if (serverConfig.clearStateEnabled) {
-        var clearBtn = '<div id="{{ dt_tableId }}_clearbtn" class="dataTables_clearbtn"><button type="button" class="btn btn-xs">Reset filters</button></div>';
+        var clearBtn = '<div id="' + serverConfig.tableId + '_clearbtn" class="dataTables_clearbtn"><button type="button" class="btn btn-xs">Reset filters</button></div>';
         $(selector).closest('.dataTables_wrapper').find('.dt_cb').replaceWith(clearBtn);
 
         $(selector+'_wrapper').on('click', '.dataTables_clearbtn', function(event) {
@@ -275,11 +310,11 @@ function render_boolean(data, type, full) {
 }
 
 function render_boolean_icons(data, type, full, trueIcon, falseIcon, trueLabel, falseLabel) {
-    if ('' == trueIcon && '' == trueLabel) {
+    if (!trueLabel) {
         trueLabel = 'true';
     }
 
-    if ('' == falseIcon && '' == falseLabel) {
+    if (!falseLabel) {
         falseLabel = 'false';
     }
 
