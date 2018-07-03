@@ -47,6 +47,16 @@ class LinkColumn extends BaseColumn
      */
     private $attributes;
 
+    public function jsonSerialize()
+    {
+        return array_merge(parent::jsonSerialize(), [
+            'route' => $this->getRoute(),
+            'routeParameters' => $this->getRouteParameters(),
+            'staticParameters' => $this->getRouteStaticParameters(),
+            'attributes' => $this->getAttributes(),
+        ]);
+    }
+
     /**
      * {@inheritdoc}
      */
