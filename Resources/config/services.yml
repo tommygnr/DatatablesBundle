@@ -30,5 +30,4 @@ services:
 
     tommygnr_datatables.datatable:
         class: TommyGNR\DatatablesBundle\Datatable\DatatableManager
-        scope: request
         arguments: ['@doctrine', '@request_stack', '@tommygnr_datatables.serializer']
