@@ -1,4 +1,5 @@
 require('datatables.net');
+import moment from 'moment';
 
 var table;
 var moment_locale = 'en-au';
@@ -99,6 +100,10 @@ $(document).ready(function () {
     serverConfig.columns.forEach(v => {
         if (v.className == 'multiselect') {
             v.render = render_multiselect;
+            return;
+        }
+        if (v.className == 'timeago') {
+            v.render = render_timeago;
             return;
         }
         if (v.className == 'link') {
@@ -327,7 +332,7 @@ function render_boolean_icons(data, type, full, trueIcon, falseIcon, trueLabel, 
 
 function render_datetime(data, type, full, localizedFormat) {
     if (data && typeof data != 'undefined') {
-        moment.lang(moment_locale);
+        moment.locale(moment_locale);
         return moment.unix(data).format(localizedFormat);
     } else {
         return null;
@@ -336,7 +341,7 @@ function render_datetime(data, type, full, localizedFormat) {
 
 function render_timeago(data, type, full) {
     if (data && typeof data != 'undefined') {
-        moment.lang(moment_locale);
+        moment.locale(moment_locale);
         return moment.unix(data).fromNow();
     } else {
         return null;
