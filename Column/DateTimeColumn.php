@@ -46,6 +46,13 @@ class DateTimeColumn extends BaseColumn
         parent::__construct($property);
     }
 
+    public function jsonSerialize()
+    {
+        $data = parent::jsonSerialize();
+        $data['localizedFormat'] = $this->getLocalizedFormat();
+        return $data;
+    }
+
     /**
      * {@inheritdoc}
      */
