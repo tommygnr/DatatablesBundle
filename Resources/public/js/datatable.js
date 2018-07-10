@@ -116,8 +116,8 @@ $(document).ready(function () {
                         routeParams[key] = full[val];
                     });
                 }
-                if (!Array.isArray(v.routeStaticParameters)) {
-                    routeParams = Object.assign(routeParams, v.routeStaticParameters);
+                if (!Array.isArray(v.staticParameters)) {
+                    routeParams = Object.assign(routeParams, v.staticParameters);
                 }
                 var route = Routing.generate(v.route, routeParams);
                 var attributes = Object.keys(v.attributes).map(a => a + '="' + v.attributes[a] + '"').join(" ");
@@ -129,6 +129,10 @@ $(document).ready(function () {
             v.render = (data, type, full) => {
                 return render_boolean_icons(data, type, full, v.true_icon, v.false_icon, v.true_label, v.false_label);
             };
+            return;
+        }
+        if (v.className == 'datetime') {
+            v.render = (data, type, full) => render_datetime(data, type, full, v.localizedFormat);
             return;
         }
         if (v.render && window.DatatableRenderObjects.hasOwnProperty(v.render) && typeof v.render == 'string') {
