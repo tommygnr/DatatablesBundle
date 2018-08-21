@@ -15,7 +15,7 @@ namespace TommyGNR\DatatablesBundle\Column;
  * Class AbstractColumn
  *
  */
-abstract class AbstractColumn implements ColumnInterface
+abstract class AbstractColumn implements ColumnInterface, \JsonSerializable
 {
     /**
      * An entity's property.
@@ -119,6 +119,11 @@ abstract class AbstractColumn implements ColumnInterface
      */
      private $seedMapFunction;
 
+     /**
+      * Extra static data for the rendering or seed map functions
+      */
+     private $extraData;
+
     /**
      * Constructor.
      *
@@ -127,6 +132,23 @@ abstract class AbstractColumn implements ColumnInterface
     public function __construct($property = null)
     {
         $this->property = $property;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'data' => $this->getData(),
+            'className' => $this->getClassName(),
+            'searchable' => $this->isSearchable(),
+            'visible' => $this->isVisible(),
+            'title' => $this->getTitle(),
+            'class' => $this->getClass(),
+            'defaultContent' => $this->getDefaultContent(),
+            'width' => $this->getWidth(),
+            'render' => $this->getRender(),
+            'seedMapFn' => $this->getSeedMapFunction(),
+            'extra_data' => $this->getExtraData(),
+        ];
     }
 
     /**
@@ -373,6 +395,22 @@ abstract class AbstractColumn implements ColumnInterface
     /**
      * {@inheritdoc}
      */
+    public function setExtraData($extraData)
+    {
+        $this->extraData = $extraData;
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getExtraData() {
+        return $this->extraData;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function setOptions(array $options)
     {
         if (array_key_exists('searchable', $options)) {
@@ -411,6 +449,9 @@ abstract class AbstractColumn implements ColumnInterface
         if (array_key_exists('seedMapFunction', $options)) {
             $this->setSeedMapFunction($options['seedMapFunction']);
         }
+        if (array_key_exists('extra_data', $options)) {
+            $this->setExtraData($options['extra_data']);
+        }
 
         return $this;
     }
@@ -434,11 +475,12 @@ abstract class AbstractColumn implements ColumnInterface
         $this->setFilterable(false);
         $this->setSortable(true);
         $this->setVisible(true);
-        $this->setTitle(null);
+        $this->setTitle('');
         $this->setRender(null);
         $this->setClass('');
-        $this->setDefaultContent(null);
+        $this->setDefaultContent("");
         $this->setWidth(null);
+        $this->setExtraData([]);
     }
 
     /**

@@ -280,6 +280,7 @@ class DatatableQuery
      */
     public function setOrderBy()
     {
+        if (!isset($this->requestParams['order'])) return $this;
         foreach ($this->requestParams['order'] as $orderCol) {
             $this->qb->addOrderBy(
                 $this->allColumns[(int) $orderCol['column']],
