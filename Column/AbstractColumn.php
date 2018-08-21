@@ -478,7 +478,7 @@ abstract class AbstractColumn implements ColumnInterface, \JsonSerializable
         $this->setTitle('');
         $this->setRender(null);
         $this->setClass('');
-        $this->setDefaultContent(null);
+        $this->setDefaultContent("");
         $this->setWidth(null);
         $this->setExtraData([]);
     }
