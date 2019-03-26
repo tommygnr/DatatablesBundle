@@ -110,6 +110,16 @@ class DatatableQuery
     }
 
     /**
+     * Get allColumns.
+     *
+     * @return array $allColumns
+     */
+    public function getAllColumns()
+    {
+        return $this->allColumns;
+    }
+
+    /**
      * Set joins.
      *
      * @param array $joins
@@ -135,6 +145,18 @@ class DatatableQuery
         $this->resolvedTableAliases[$propertyPath] = ['alias' => $tableAlias, 'column' => $column];
 
         return $this;
+    }
+
+    /**
+     * Get a resolved alias, if it exists
+     *
+     * @param string $property
+     *
+     * @return array
+     */
+    public function getResolvedTableAlias($property)
+    {
+        return $this->resolvedTableAliases[$property];
     }
 
     /**
@@ -178,7 +200,7 @@ class DatatableQuery
     public function setSelectFrom(array $selectColumns)
     {
         foreach ($selectColumns as $tableAlias => $selectColumns) {
-            $this->qb->addSelect('partial '.$tableAlias.'.{'.implode(',', $selectColumns).'}');
+            $this->qb->addSelect('partial '.$tableAlias.'.{'.implode(',', $selectColumns).'} as t_' . $tableAlias);
         }
 
         $this->qb->from($this->metadata->getName(), $this->metadata->getTableName());

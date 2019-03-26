@@ -72,6 +72,9 @@ class ColumnFactory implements ColumnFactoryInterface
             case 'expandable':
                 $this->column = new ExpandableColumn($property);
                 break;
+            case 'timebetween':
+                $this->column = new TimeBetweenColumn($property);
+                break;
             default:
                 throw new Exception("The {$name} column is not supported.");
         }

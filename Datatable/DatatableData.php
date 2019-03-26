@@ -222,6 +222,31 @@ class DatatableData implements DatatableDataInterface
     }
 
     /**
+     * Convert a property into it's table alias
+     */
+    public function getTableAlias($property)
+    {
+        $associationParts = explode('.', $property);
+        $tableAlias = $this->metadata->getTableName();
+
+        while (count($associationParts) > 1) {
+            $column = array_shift($associationParts);
+            $found = false;
+            foreach ($this->joins as $join) {
+                if ($join['source'] == $tableAlias . '.' . $column) {
+                    $tableAlias = $join['target'];
+                    $found = true;
+                }
+            }
+            if (!$found) {
+                throw new Exception("Could not find join " . $column . ". Might not exist");
+            }
+        }
+
+        return $tableAlias . "." . $associationParts[0];
+    }
+
+    /**
      * Build query.
      *
      * @return $this
@@ -231,6 +256,10 @@ class DatatableData implements DatatableDataInterface
         //Set columns
         $this->datatableQuery->setSelectFrom($this->selectColumns);
         $this->datatableQuery->setAllColumns($this->allColumns);
+
+        foreach ($this->datatable->getColumns() as $column) {
+            $column->customQuerySettings($this->datatableQuery, $this);
+        }
 
         $this->datatableQuery->setLimit();
         $this->datatableQuery->setOrderBy();
@@ -259,8 +288,14 @@ class DatatableData implements DatatableDataInterface
             'columnFilterChoices' => $this->getColumnFilterChoices(),
         );
 
+        $fieldName = 't_' . $this->metadata->getTableName();
+
         foreach ($paginator as $item) {
-            $output['data'][] = $item;
+            if (isset($item[$fieldName])) {
+                $output['data'][] = $item[$fieldName];
+            } else {
+                $output['data'][] = $item;
+            }
         }
 
         $json = $this->serializer->serialize($output, 'json');

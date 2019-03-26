@@ -11,6 +11,9 @@
 
 namespace TommyGNR\DatatablesBundle\Column;
 
+use TommyGNR\DatatablesBundle\Datatable\DatatableQuery;
+use TommyGNR\DatatablesBundle\Datatable\DatatableData;
+
 /**
  * Class AbstractColumn
  *
@@ -487,4 +490,12 @@ abstract class AbstractColumn implements ColumnInterface, \JsonSerializable
      * {@inheritdoc}
      */
     abstract public function getClassName();
+
+    /**
+     * {@inheritdoc}
+     */
+    public function customQuerySettings(DatatableQuery $query, DatatableData $data)
+    {
+        return null;
+    }
 }
