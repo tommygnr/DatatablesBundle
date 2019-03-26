@@ -15,8 +15,8 @@
         "issues": "https://github.com/tommygnr/DatatablesBundle/issues"
     },
     "require": {
-        "php": ">=5.4.0",
-        "symfony/framework-bundle": "~2.3",
+        "php": ">=7.1",
+        "symfony/framework-bundle": "^3.4",
         "friendsofsymfony/jsrouting-bundle": "@stable"
     },
     "suggest": {
@@ -28,4 +28,3 @@
     },
     "target-dir": "TommyGNR/DatatablesBundle"
 }
-

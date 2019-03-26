@@ -457,8 +457,12 @@ abstract class AbstractColumn implements ColumnInterface, \JsonSerializable
     }
 
     public function filterProcess($qb, $field, $alias, $value) {
-      $qb->setParameter($alias, "%".$value."%");
-      return $qb->expr()->like($field, "?$alias");
+        if ($this->isFilterSeeded()) {
+            $qb->setParameter($alias, $value);
+            return $qb->expr()->eq($field, "?$alias");
+        }
+        $qb->setParameter($alias, "%".$value."%");
+        return $qb->expr()->like($field, "?$alias");
     }
 
     /**
@@ -474,7 +478,7 @@ abstract class AbstractColumn implements ColumnInterface, \JsonSerializable
         $this->setTitle('');
         $this->setRender(null);
         $this->setClass('');
-        $this->setDefaultContent(null);
+        $this->setDefaultContent("");
         $this->setWidth(null);
         $this->setExtraData([]);
     }

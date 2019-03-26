@@ -48,6 +48,7 @@
                 "order": [{% for col, order in dt_defaultOrder %}[ {{col}}, "{{order}}" ]{% if not loop.last %},{% endif %}{% endfor %}],
                 "stateSave": {{ dt_stateSaving ? 'true' : 'false' }},
                 "stateDuration": {{ dt_stateDuration is defined ? dt_stateDuration : 'false' }},
+                "searchCols": [{% for col, search in dt_defaultColumnSearches %}{% if search %}{ "search": "{{search|raw}}"}{% else %}null{% endif %}{% if not loop.last %},{% endif %}{% endfor %}],
                 "language": {
                     "processing": "{{ 'datatables.datatable.processing'|trans({}, 'messages') }}",
                     "lengthMenu": "{{ 'datatables.datatable.lengthMenu'|trans({}, 'messages') }}",
