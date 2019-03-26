@@ -11,6 +11,9 @@
 
 namespace TommyGNR\DatatablesBundle\Column;
 
+use TommyGNR\DatatablesBundle\Datatable\DatatableQuery;
+use TommyGNR\DatatablesBundle\Datatable\DatatableData;
+
 /**
  * Class ColumnInterface
  *
@@ -222,4 +225,9 @@ interface ColumnInterface
      * @return string
      */
     public function getClassName();
+
+    /**
+     * Apply column-specific functionality to query
+     */
+    public function customQuerySettings(DatatableQuery $query, DatatableData $data);
 }

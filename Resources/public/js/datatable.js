@@ -167,6 +167,20 @@ $(document).ready(function () {
             v.render = (data, type, full) => render_datetime(data, type, full, v.localizedFormat);
             return;
         }
+        if (v.className == 'timebetween') {
+            v.render = (data, type, full) => {
+                let matchingField = v.extra_data.match;
+                if (data) {
+                    let days = Math.floor(moment.duration((full[matchingField] - data) * 1000).asDays());
+                    if (days <= 0) return "Less than one day";
+                    if (days == 1) return "One day";
+                    return days + " days";
+                } else {
+                    return null;
+                }
+            };
+            return;
+        }
         if (v.render && window.DatatableRenderObjects.hasOwnProperty(v.render) && typeof v.render == 'string') {
             let fnIndex = v.render;
             v.render = (data, type, full) => window.DatatableRenderObjects[fnIndex](data, type, full, v.extra_data);
